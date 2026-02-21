@@ -131,6 +131,18 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
 // ***********************************************
 // get - functions
 // ***********************************************
+void GLFrameWork::setClearColor(float4 col){
+    _ClearColor = col;
+}
+
+void GLFrameWork::setClearColor(float r, float g, float b, float a){
+    float4 col= {r,g,b,a};
+    _ClearColor = col;
+}
+
+// ***********************************************
+// get - functions
+// ***********************************************
 
 INIT_STATES GLFrameWork::getInitState(){
     return sdlstate;

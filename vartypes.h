@@ -6,6 +6,7 @@ typedef struct{
     float y;
     float z;
     float w;
+
 }float4;
 
 #endif // VARTYPES_H

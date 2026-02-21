@@ -43,9 +43,17 @@ public:
     SDL_DisplayMode getCurrentDisplayMode();
     string getCurrentDisplayModeAsString();
 
+    // ***********************************
+    // setters
+    // ***********************************
+    void setClearColor(float4 col);
+    void setClearColor(float r,float g, float b,float a);
+
 protected:
     void sdl_die(string msg);
     bool HandleMessage();
+
+
 
     string Logtext;
 
