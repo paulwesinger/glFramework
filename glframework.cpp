@@ -1,9 +1,9 @@
 #include <glew.h>
 #include "glframework.h"
+#include <sstream>
 
 
 GLFrameWork::GLFrameWork() {
-    InitSDL_done = false;
     _ResX = 1440;
     _ResY = 1080;
 
@@ -14,6 +14,8 @@ GLFrameWork::GLFrameWork() {
     _ClearColor.z = 1.0f;
     _ClearColor.w = 1.0f;
     glClearColor(_ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+
+    sdlstate = INIT_STATES::SDL_STATE_UNDEFINED;
 }
 
 std::string GLFrameWork::Log(){
@@ -59,9 +61,7 @@ bool GLFrameWork::InitSDL(){
         return ret;
 
     atexit(SDL_Quit);
-    Logtext = "SDL-Init Ok\n";
-
-    InitSDL_done = true;
+    Logtext = "SDL-Init Ok\n";    
     // Attribute
     SDL_GL_LoadLibrary(NULL);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
@@ -104,26 +104,56 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
     glViewport(0,0,_ResX, _ResY);
 
     if ( GLWindow == nullptr)  {
-
+        sdlstate = INIT_STATES::SDL_WINDOWCREATE_FAILED;
         sdl_die("Konnte Fenster nicht erzeugen");
         return nullptr;
     }
 
     glContext = SDL_GL_CreateContext(GLWindow);
     if ( ! glContext) {
+        sdlstate = INIT_STATES::SDL_CONTEXT_FAILED;
         sdl_die (" Konnte Context nicht erzeugen ");
         return nullptr;
     }
+
+    SDL_GL_SetSwapInterval(1);
+
 
     DesktopDisplayMode.w = _ResX;
     DesktopDisplayMode.h = _ResY;
     DesktopDisplayMode.format = SDL_PIXELFORMAT_RGBA8888;
     SDL_SetWindowDisplayMode(GLWindow,&DesktopDisplayMode);
 
+    sdlstate = INIT_STATES::SDL_CONTEXT_OK;
     return GLWindow;
+}
+
+// ***********************************************
+// get - functions
+// ***********************************************
+
+INIT_STATES GLFrameWork::getInitState(){
+    return sdlstate;
+}
+
+SDL_DisplayMode GLFrameWork::getCurrentDisplayMode(){
+    return DesktopDisplayMode;
+}
+
+string GLFrameWork::getCurrentDisplayModeAsString(){
+    stringstream stream;
+
+    stream  <<"Aktueller Display- Modus:\n" <<
+        to_string(DesktopDisplayMode.w) << " x " << to_string(DesktopDisplayMode.h)  <<
+        " Format: " << DesktopDisplayMode.format;
+
+    return stream.str();
 
 }
 
+// **********************************************
+// event handling
+// **********************************************
 bool GLFrameWork::HandleMessage(){
 
 
@@ -172,11 +202,10 @@ void GLFrameWork::PrintOpenGLData(){
     printf("Version   %s\n",glGetString(GL_VERSION));
 }
 
-void GLFrameWork::DestroySDL(){
-    if (InitSDL_done){
-        if(GLWindow != nullptr)
-            SDL_DestroyWindow(GLWindow);
-    }
+void GLFrameWork::DestroySDL(){  
+    if(GLWindow != nullptr)
+        SDL_DestroyWindow(GLWindow);
+
 }
 
 void GLFrameWork::sdl_die(std::string msg){
