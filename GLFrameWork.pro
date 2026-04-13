@@ -11,11 +11,15 @@ VERSION = 1.0.0
 
 SOURCES += \
     glframework.cpp \
+    rendertext.cpp \
+    shader.cpp \
     vartypes.cpp
 
 HEADERS += \
     GLFrameWork_global.h \
     glframework.h \
+    rendertext.h \
+    shader.h \
     vartypes.h
 
 # Default rules for deployment.
@@ -38,3 +42,26 @@ else:unix: LIBS += -L$$PWD/../../../../usr/lib64/ -lGL
 
 INCLUDEPATH += $$PWD/../../../../usr/include/GL
 DEPENDPATH += $$PWD/../../../../usr/include/GL
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/release/ -lfreetype
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/debug/ -lfreetype
+else:unix: LIBS += -L$$PWD/../../../../usr/lib64/ -lfreetype
+
+INCLUDEPATH += $$PWD/../../../../usr/include/freetype2
+DEPENDPATH += $$PWD/../../../../usr/include/freetype2
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/release/ -lSDL2_image
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/debug/ -lSDL2_image
+else:unix: LIBS += -L$$PWD/../../../../usr/lib64/ -lSDL2_image
+
+INCLUDEPATH += $$PWD/../../../../usr/include/SDL2
+DEPENDPATH += $$PWD/../../../../usr/include/SDL2
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../Logger/build/Desktop-Release/release/ -lLogger
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../Logger/build/Desktop-Release/debug/ -lLogger
+else:unix: LIBS += -L$$PWD/../Logger/build/Desktop-Release/ -lLogger
+
+INCLUDEPATH += $$PWD/../Logger
+DEPENDPATH += $$PWD/../Logger/build
+
+INCLUDEPATH += /usr/include/glm

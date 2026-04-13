@@ -160,7 +160,6 @@ string GLFrameWork::getCurrentDisplayModeAsString(){
         " Format: " << DesktopDisplayMode.format;
 
     return stream.str();
-
 }
 
 // **********************************************
