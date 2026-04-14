@@ -3,9 +3,9 @@
 #include <sstream>
 
 
-GLFrameWork::GLFrameWork() {
-    _ResX = 1440;
-    _ResY = 1080;
+GLFrameWork::GLFrameWork(int resx,int resy) {
+    _ResX = resx;
+    _ResY = resy;
 
     _Quit = false;
 
@@ -16,6 +16,20 @@ GLFrameWork::GLFrameWork() {
     glClearColor(_ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
 
     sdlstate = INIT_STATES::SDL_STATE_UNDEFINED;
+
+    initViewElements();
+}
+
+bool GLFrameWork::initViewElements(){
+
+    // try{
+
+    // }
+    // catch(std::invalid_argument const& ex){
+    //     Logtext += ex.what();
+    // }
+
+    return true;
 }
 
 std::string GLFrameWork::Log(){
@@ -198,6 +212,10 @@ void GLFrameWork::Run(){
         glDepthFunc(GL_LEQUAL);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+
+        for(RenderText* elems:_Texts) {
+            elems->Draw();
+        }
 
 
 

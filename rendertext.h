@@ -9,7 +9,7 @@
 #include <map>
 
 #include <glew.h>
-//#include <gl.h>
+#include <gl.h>
 #include <glm.hpp>
 #include "shader.h"
 #include "vartypes.h"
@@ -31,28 +31,28 @@ struct Character {
     GLuint     Height;
 };
 
-struct sTextfeld{
-    GLfloat x;
-    GLfloat y;
-    GLfloat w;
-    GLfloat h;
-};
+// struct sTextfeld{
+//     GLfloat x;
+//     GLfloat y;
+//     GLfloat w;
+//     GLfloat h;
+// };
 
 
 class RenderText
 {
-public:  
+public:
     RenderText(int resx, int resy,Shader * sh);
     RenderText(int resx, int resy, sPoint pos, Shader * sh);
 
+    ~RenderText();
+
     bool Init(int resx,int resy);
-
-
+    void Draw();
 protected:
+    bool _AlignRight;
     bool _FAILED;
-
     GLfloat _Scale;
-
 
     glm::vec4 _TextColor;
     glm::vec4 _BackgroundColor;
@@ -100,6 +100,7 @@ protected:
     FT_Library ft;
     FT_Face face;
     std::string _Font;
+
     // Einige Felder für look and feel:
     FT_UInt _Pixelsize;
     GLfloat _MarginLeft,_MarginRight, _MarginY;
@@ -108,12 +109,12 @@ protected:
     //Hilfsfunktion zum einlesen der 5 Texturen für Textfeld
     bool GenTextfeldSegment(std::string image, unsigned int &tex);
 
-    sTextfeld _Textfeld;
+    sRect _Textfeld;
     std::vector<std::string> _StringList;
 
-    std::string _PathHeadLine;
-    std::string _PathTextField;
-    std::string _PathBottomLine;
+    // std::string _PathHeadLine;
+    // std::string _PathTextField;
+    // std::string _PathBottomLine;
 
 private:
     // hlpvars for drag
@@ -124,6 +125,9 @@ private:
     Logger log;
 
     void initConstructor(int resx,int resy,Shader * sh);
+    void CalcSize(int &weite, int &height);
+    void RenderPaintarea(GLfloat x, GLfloat y, GLfloat height);
+    void RenderFrame(GLfloat x, GLfloat y);
 };
 
 #endif // RENDERTEXT_H

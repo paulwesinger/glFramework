@@ -6,6 +6,8 @@
 #include "GLFrameWork_global.h"
 #include "vartypes.h"
 
+#include "rendertext.h"
+
 using namespace std;
 
 typedef enum{
@@ -20,7 +22,7 @@ typedef enum{
 class GLFRAMEWORK_EXPORT GLFrameWork
 {
 public:
-    GLFrameWork();
+    GLFrameWork(int resx, int resy);
     bool InitSDL();
     virtual void DestroySDL();
     void Run();
@@ -53,7 +55,7 @@ protected:
     void sdl_die(string msg);
     bool HandleMessage();
 
-
+    bool initViewElements();
 
     string Logtext;
 
@@ -67,9 +69,17 @@ protected:
 
     SDL_Event _Event;
     float4 _ClearColor;
-
     // State Handling
     INIT_STATES sdlstate;
+
+    //----------------------------------------------
+    // View - Elements: in listen packen.
+    // zb.: TextFenster, Controlls, 3D objects
+    // ---------------------------------------------
+    std::vector<RenderText*> _Texts;
+
+
+
 };
 
 #endif // GLFRAMEWORK_H

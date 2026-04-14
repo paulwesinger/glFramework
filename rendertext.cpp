@@ -1,5 +1,5 @@
 #include "rendertext.h"
-
+#include <gtc/type_ptr.hpp>
 // Element Indices
 static const GLushort vertex_indices[] =
     {
@@ -49,12 +49,13 @@ static const GLchar * fs2D_src = {
     "}                                                                "
 };
 
-
-
-
+//--------------------------------------------
+// Construct / Destruct
+// -------------------------------------------
 
 RenderText::RenderText(int resx, int resy,Shader * sh){
     initConstructor(resx,resy,sh);
+    _Pos = sPoint(10,10);
 }
 
 RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh){
@@ -62,26 +63,153 @@ RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh){
     _Pos = pos;
 }
 
+RenderText::~RenderText(){
 
-void RenderText::initConstructor(int resx, int resy, Shader *sh){
-    _Font = GNU_DEFAULT_FONT;
-    _Shader = sh;
-    _ResX = resx;
-    _ResY = resy;
-
-    _BackgroundColor = glm::vec4(0.0f,0.0f,0.8f,0.3f);
-    _TextColor = glm::vec4(1.0f,1.0f,1.0f,1.0f);
-    _Scale = 1.0f;
-    _Pixelsize = 16;
-    _MarginLeft = 5.0f;
-    _MarginRight= 5.0f;
-    _MarginY = 5.0f;
 }
 
 
+// ---------------------------------------------------
+// publics:
+// ---------------------------------------------------
+void RenderText::Draw(){
+    GLfloat _x = _Pos.x;
+    GLfloat _y = _Pos.y;
+
+    //projection =  glm::ortho(0.0f,static_cast<GLfloat>(_ResX), static_cast<GLfloat>(_ResY) , 0.0f);   //,  -1.0f, 1.0f);
+    projection =  glm::orthoRH(0.0f,static_cast<GLfloat>(_ResX), static_cast<GLfloat>(_ResY), 0.0f,  -100.0f, 100.0f);
+
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    // Breite ermitteln:
+    std::string::const_iterator c;
+    int width;
+    int height;
+
+    CalcSize(width,height);
+    _Textfeld.x = posX;
+    _Textfeld.y = posY;
+    _Textfeld.w = width * _Scale + _MarginLeft + _MarginRight;
+    _Textfeld.h = height;
+    GLfloat newX;
+    if ( _AlignRight )
+        newX = _ResX - _Textfeld.w;
+    else
+        newX = _x;
+
+    // --------------------------------
+    // Erstmal alles fürs TextFenster
+    //---------------------------------
+    // if (_HasTexture)
+    //     _CurrentShader = shader ->getTexture2DShader();
+    // else
+    _CurrentShader = _Shader->getColor2DShader();
+
+    glUseProgram(_CurrentShader);
+
+    projection_loc = glGetUniformLocation(_CurrentShader,"projection_textfeld");
+    framecolor_loc = glGetUniformLocation(_CurrentShader,"color");
+    // IDentity
+    glm::mat4 Model(1.0f);
+
+    glm::mat4 mp = projection ;//* Model ;
+    glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(mp)); // projection matrix im shader init.
+    //  glUniform4f(framecolor_loc,_BackgroundColor.r,_BackgroundColor.g,_BackgroundColor.b,_BackgroundColor.a);
+
+
+       // ALle Buffers binden ....
+        glBindVertexArray(_bgVAO);
+        glBindBuffer(GL_ARRAY_BUFFER,_bgVBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_bgEBO);
+
+        RenderPaintarea(newX, _y - (16 - _MarginY*2), height);
+
+        // Alles Rendern
+      //  if (_RenderHeader)
+            RenderFrame(newX, _y - (16.0f - _MarginY*2));
+
+      //  if (_RenderBottom)
+            RenderFrame(newX, _y + height);
+        // ... und aushängen
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+    _x = newX + _MarginLeft;
+    GLfloat startX  = _x;
+    GLfloat row     = _y + 16.0f;//_MarginY;
+    //--------------------
+    // Text Rendern
+    //--------------------
+    glActiveTexture(GL_TEXTURE0);
+    GLuint s = _Shader->getGlyphShader();
+
+    _GlyphShader = s;
+    //SetGlyphShader(s);
+    glUseProgram( s); //   shader->getGlyphShader());
+
+
+    glBindVertexArray(_VAO);
+    mv_projectloc = glGetUniformLocation(_GlyphShader,"projection");
+    uniform_colorloc   = glGetUniformLocation(_GlyphShader,"col2D");
+
+    //glm::mat4 Model(1.0f);
+    glm::mat4 mvp = projection * Model ;
+
+    glUniformMatrix4fv(mv_projectloc, 1, GL_FALSE, glm::value_ptr(mvp)); //projection));
+    glUniform4f(uniform_colorloc,_TextColor.r, _TextColor.g, _TextColor.b, _TextColor.a);
+
+    // Iterate through all characters
+    // std::string::const_iterator c;
+    for (uint i = 0; i < _StringList.size(); i++ ) {
+        for (c = _StringList[i].begin(); c != _StringList[i].end(); c++)
+        {
+            Character ch = Characters[*c];
+
+            GLfloat xpos = _x + ch.Bearing.x * _Scale;
+            //GLfloat ypos = row - ((ch.Size.y - ch.Bearing.y) * _Scale) ;
+
+            GLfloat ypos;
+            ypos = row + ((ch.Size.y - ch.Bearing.y) * _Scale) ;
+
+            GLfloat w = ch.Size.x * _Scale;
+            GLfloat h = ch.Size.y * _Scale;
+            // Update VBO for each character
+            GLfloat vertices[6][4] = {
+                { xpos,     ypos - h - 6.0f,   0.0, 0.0 },  // alles 16 war 6 !!
+                { xpos,     ypos - 6.0f,       0.0, 1.0 },
+                { xpos + w, ypos - 6.0f,       1.0, 1.0 },
+
+                { xpos,     ypos - h - 6.0f,   0.0, 0.0 },
+                { xpos + w, ypos - 6.0f,       1.0, 1.0 },
+                { xpos + w, ypos - h - 6.0f,   1.0, 0.0 }
+            };
+            // Render glyph texture over quad
+            glBindTexture(GL_TEXTURE_2D,ch.TextureID);
+            // Update content of VBO memory
+            glBindBuffer(GL_ARRAY_BUFFER, _VBO);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // Be sure to use glBufferSubData and not glBufferData
+            // Render quad
+            //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_EBO);
+            //glDrawElements( GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_SHORT, 0);
+            glDrawArrays(GL_TRIANGLES, 0, 6);
+            // Now advance cursors for next glyph (note that advance is number of 1/64 pixels)
+            _x += (ch.Advance >> 6) * _Scale; // Bitshift by 6 to get value in pixels (2^6 = 64 (divide amount of 1/64th pixels by 64 to get amount of pixels))
+        }
+        _x =     startX;
+        row +=  18.0f *_Scale; //  + bearingdiff ;  // 16
+    }
+    // Aufräumen
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+    glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D,0);
+}
+
 bool RenderText::Init(int resx, int resy){
-    //_ResX = resx;
-    //_ResY = resy;
+    // _ResX = resx;
+    // _ResY = resy;
     // _RenderBottom = false;
     // _RenderHeader = false;
     // _HasBackground = false;
@@ -192,51 +320,146 @@ bool RenderText::Init(int resx, int resy){
                  GL_DYNAMIC_DRAW);
 
 
-
-    //-------------------------------------------------------------------
-
-
     // ---------------------------------------------------------------
-    // Das ganze jetzt für Background
-    // Es werden 5 Texturen benötigt --> Links oben, Rechts oben, Rahmen, Links unten, Rechts unten.
-    // An die Textlänge wird nur der Mittelteil angepast.
+    // Das ganze jetzt für Background ohne textur nur color
+    // An die Textlänge wird die breite angepasst
     // ----------------------------------------------------------------
     // VertexArray für Headline
-    // glGenVertexArrays(1,&_bgVAO);
-    // glBindVertexArray(_bgVAO);
-    // // ****************************************************************
-    // // ----------------------------------------------------------------
-    // // Das ganze jetzt noch mal für den Mittelteil und die Eckteile
-    // // ----------------------------------------------------------------
-    // // VertexBuffer
-    // glGenBuffers(1,&_bgVBO);
-    // glBindBuffer(GL_ARRAY_BUFFER,_bgVBO);
-    // glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*6*4, NULL, GL_DYNAMIC_DRAW);  // wird in paint angepasst
-    // // Mittel Teil
-    // glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
-    // glEnableVertexAttribArray(0);
-    // //TexturCoordinates
-    // glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)) );
-    // glEnableVertexAttribArray(1);
-    // //-------------------
-    // //Elementbuffer
-    // //-------------------
-    // glGenBuffers(1,&_bgEBO);
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bgEBO);
-    // glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-    //              sizeof(vertex_indices),
-    //              vertex_indices,
-    //              GL_DYNAMIC_DRAW);
-    // //----------
-    // // Aufräumen
-    // //----------
-    // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-    // glBindBuffer(GL_ARRAY_BUFFER,0);
-    // glBindVertexArray(0);
+     glGenVertexArrays(1,&_bgVAO);
+     glBindVertexArray(_bgVAO);
+    // ****************************************************************
+    // ----------------------------------------------------------------
+    // Das ganze jetzt noch mal für den Mittelteil und die Eckteile
+    // ----------------------------------------------------------------
+    // VertexBuffer
+    glGenBuffers(1,&_bgVBO);
+    glBindBuffer(GL_ARRAY_BUFFER,_bgVBO);
+    glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*6*4, NULL, GL_DYNAMIC_DRAW);  // wird in paint angepasst
 
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
+    glEnableVertexAttribArray(0);
+    //TexturCoordinates
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)) );
+    glEnableVertexAttribArray(1);
+    //------------------------
+    //Elementbuffer
+    //---------------------
+    glGenBuffers(1,&_bgEBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bgEBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                 sizeof(vertex_indices),
+                 vertex_indices,
+                 GL_DYNAMIC_DRAW);
 
-
-
+    //----------
+    // Aufräumen
+    //----------
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+    glBindBuffer(GL_ARRAY_BUFFER,0);
+    glBindVertexArray(0);
 
     return true;
 }
+
+// -----------------------------------------
+// privates:
+// -----------------------------------------
+
+void RenderText::initConstructor(int resx, int resy, Shader *sh){
+    _Font = GNU_DEFAULT_FONT;
+    _Shader = sh;
+    _ResX = resx;
+    _ResY = resy;
+
+    _BackgroundColor = glm::vec4(0.0f,0.0f,0.8f,0.3f);
+    _TextColor = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+    _Scale = 1.0f;
+    _Pixelsize = 16;
+    _MarginLeft = 5.0f;
+    _MarginRight= 5.0f;
+    _MarginY = 5.0f;
+    _AlignRight = false;
+}
+
+void RenderText::CalcSize(int &weite, int &height) {
+    // Breite ermitteln:
+    std::string::const_iterator c;
+    GLfloat feldweite = 0.0f;
+    GLfloat feldhoehe = 20.0f; // Standard höhe 16 Pixel
+    GLfloat width = 0.0f;
+    int count = 0;
+    for ( uint i = 0; i < _StringList.size(); i ++ ) {
+        for (c = _StringList[i].begin(); c != _StringList[i].end(); c++) {
+            Character ch = Characters[*c];
+            feldweite += static_cast<GLfloat> ( (ch.Advance >> 6) * _Scale);
+        }
+        count ++;
+
+        if ( width < feldweite )
+            width = feldweite;
+        feldweite = 0.0f;
+    }
+
+    weite = width;
+    height = feldhoehe * count * _Scale;
+}
+
+void RenderText::RenderPaintarea(GLfloat x, GLfloat y, GLfloat height) {
+
+    // Standard Masse der images !!
+    GLfloat w = _Textfeld.w;
+    //GLfloat h = 16.0f;
+
+    GLfloat vertices[6][4] = {
+
+    { x,     y  + height,          0.0, 0.0 },
+    { x,     y,                    0.0, 1.0 },
+    { x + w, y,                    1.0, 1.0 },
+
+    { x, y  +  height,             0.0, 0.0 }, // w muss weg für 6  uv = 0,0 !!
+    { x + w, y,                    1.0, 1.0 },
+    { x + w, y + height,           1.0, 0.0 }
+};
+
+// if (_HasTexture) {
+//     glUniform4f(framecolor_loc,1.0,1.0,1.0, 0.5); // Textfeld hat 50% Alpha -> sieht cool aus
+//     glBindTexture(GL_TEXTURE_2D,texPaintarea);
+// }
+// else
+    glUniform4f(framecolor_loc,_BackgroundColor.r,_BackgroundColor.g,_BackgroundColor.b,_BackgroundColor.a);
+
+    glBufferSubData(GL_ARRAY_BUFFER,0,sizeof(vertices),vertices);
+
+    glDrawElements( GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_SHORT, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void RenderText::RenderFrame(GLfloat x, GLfloat y) {
+    // Standard Masse der images !!
+    GLfloat w = _Textfeld.w;
+    GLfloat h = 16.0f;
+
+    interSectHeadline.x = x;
+    interSectHeadline.w = x + w;
+    interSectHeadline.y = y - h;
+    interSectHeadline.h = y;
+
+    GLfloat vertices[6][4] = {
+        { x,     y  - h,        0.0, 0.0 },
+        { x,     y,             0.0, 1.0 },
+        { x + w, y,             1.0, 1.0 },
+
+        { x, y - h,             0.0, 0.0 }, // w muss weg für 6  uv = 0,0 !!
+        { x + w, y,             1.0, 1.0 },
+        { x + w, y - h,         1.0, 0.0 }
+    };
+
+
+    glUniform4f(framecolor_loc,1.0,1.0,1.0,1.0);
+    glBufferSubData(GL_ARRAY_BUFFER,0,sizeof(vertices),vertices);
+//    glBindTexture(GL_TEXTURE_2D,tex);
+    glDrawElements( GL_TRIANGLE_STRIP, 6, GL_UNSIGNED_SHORT, 0);
+//    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+
