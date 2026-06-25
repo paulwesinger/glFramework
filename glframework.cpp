@@ -4,30 +4,28 @@
 
 
 GLFrameWork::GLFrameWork(int resx,int resy) {
+
     _ResX = resx;
     _ResY = resy;
 
-    _Quit = false;
+    _Quit = false;    
+
+    if (initViewElements())
+        sdlstate = SDL_CONTEXT_OK;
+    else
+        sdlstate = SDL_CONTEXT_FAILED;
+
+}
+
+bool GLFrameWork::initViewElements(){
+
+    _Shader = new Shader();
 
     _ClearColor.x = 0.0f;
     _ClearColor.y = 0.0f;
     _ClearColor.z = 1.0f;
     _ClearColor.w = 1.0f;
     glClearColor(_ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
-
-    sdlstate = INIT_STATES::SDL_STATE_UNDEFINED;
-
-    initViewElements();
-}
-
-bool GLFrameWork::initViewElements(){
-
-    // try{
-
-    // }
-    // catch(std::invalid_argument const& ex){
-    //     Logtext += ex.what();
-    // }
 
     return true;
 }

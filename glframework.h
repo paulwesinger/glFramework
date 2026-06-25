@@ -15,6 +15,7 @@ typedef enum{
     SDL_CONTEXT_FAILED,
     SDL_WINDOWCREATE_OK,
     SDL_WINDOWCREATE_FAILED,
+
     SDL_STATE_UNDEFINED
 
 }INIT_STATES;
@@ -51,10 +52,21 @@ public:
     void setClearColor(float4 col);
     void setClearColor(float r,float g, float b,float a);
 
+    // ***********************************
+    // Add view Elemens
+    // ***********************************
+
+    void Add_TextDisplay(sPoint pos);
+
+
+
 protected:
     void sdl_die(string msg);
     bool HandleMessage();
 
+    // *******************************
+    // init shader, clearcolor usw..
+    // *******************************
     bool initViewElements();
 
     string Logtext;
@@ -67,6 +79,8 @@ protected:
     int _ResY;
     bool _Quit;
 
+    Shader * _Shader;
+
     SDL_Event _Event;
     float4 _ClearColor;
     // State Handling
@@ -77,6 +91,7 @@ protected:
     // zb.: TextFenster, Controlls, 3D objects
     // ---------------------------------------------
     std::vector<RenderText*> _Texts;
+
 
 
 
