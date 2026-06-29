@@ -54,19 +54,46 @@ static const GLchar * fs2D_src = {
 // -------------------------------------------
 
 RenderText::RenderText(int resx, int resy,Shader * sh){
-    initConstructor(resx,resy,sh);
+    _Shader = sh;
     _Pos = sPoint(10,10);
+    // initConstructor(resx,resy,sh);
+    // Init();
+
 }
 
 RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh){
-    initConstructor(resx,resy,sh);
+
+    _Shader = sh;
     _Pos = pos;
+    // initConstructor(resx,resy,sh);
+    // Init();
+
 }
 
 RenderText::~RenderText(){
 
 }
 
+
+void RenderText::SetText(string text){
+    try{
+        _StringList.push_back(text);
+    }
+    catch(const std::exception& e)
+    {
+        log.logwarn(e.what());
+    }
+}
+
+string RenderText::GetText(int index){
+
+    try{
+        return _StringList[0];
+    }
+    catch(const std::exception e){
+        return e.what();
+    }
+}
 
 // ---------------------------------------------------
 // publics:
@@ -207,7 +234,7 @@ void RenderText::Draw(){
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
-bool RenderText::Init(int resx, int resy){
+bool RenderText::Init(){
     // _ResX = resx;
     // _ResY = resy;
     // _RenderBottom = false;

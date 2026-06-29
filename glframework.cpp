@@ -8,7 +8,7 @@ GLFrameWork::GLFrameWork(int resx,int resy) {
     _ResX = resx;
     _ResY = resy;
 
-    _Quit = false;    
+    _Quit = false;
 
     if (initViewElements())
         sdlstate = SDL_CONTEXT_OK;
@@ -17,15 +17,25 @@ GLFrameWork::GLFrameWork(int resx,int resy) {
 
 }
 
+
 bool GLFrameWork::initViewElements(){
 
+    Logtext += "Init Shader";
     _Shader = new Shader();
 
-    _ClearColor.x = 0.0f;
-    _ClearColor.y = 0.0f;
-    _ClearColor.z = 1.0f;
+
+    // **************************
+    // Standard grau
+    // **************************
+    _ClearColor.x = 0.5f;
+    _ClearColor.y = 0.5f;
+    _ClearColor.z = 0.5f;
     _ClearColor.w = 1.0f;
     glClearColor(_ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+
+  //  Logtext += "InitViewElements: Stelle Hintergrund auf (Grau) R: " + std::to_string(_ClearColor.x) + "G: " + std::to_string(_ClearColor.y) +
+    //           "B: " + std::to_string(_ClearColor.z);
+
 
     return true;
 }
@@ -59,7 +69,7 @@ void GLFrameWork::PrintDisplayModes(){
                 Logtext += "Display : " + std::to_string(j) + " Resolution Mode[" + index+ "] : " + w + "x" + h + "\n";
             }
             catch ( ...) {
-                Logtext += "Konnte mode[" + index + "] nicht ermitteln\n";
+                Logtext += "Konnte Display Mode[" + index + "] nicht ermitteln\n";
             }
 
         }
@@ -73,7 +83,7 @@ bool GLFrameWork::InitSDL(){
         return ret;
 
     atexit(SDL_Quit);
-    Logtext = "SDL-Init Ok\n";    
+    Logtext = "SDL-Init Ok\n";
     // Attribute
     SDL_GL_LoadLibrary(NULL);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
@@ -97,7 +107,7 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
             caption.c_str(),
             0, //SDL_WINDOWPOS_UNDEFINED,
             0, //SDL_WINDOWPOS_UNDEFINED,
-           _ResX,_ResY,
+            _ResX,_ResY,
             //SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL
             SDL_WINDOW_OPENGL
             );
@@ -128,6 +138,14 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
         return nullptr;
     }
 
+    glewExperimental = GL_TRUE;
+    glewInit();
+
+
+    SDL_GL_MakeCurrent(GLWindow,glContext);
+
+
+
     SDL_GL_SetSwapInterval(1);
 
 
@@ -137,6 +155,31 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
     SDL_SetWindowDisplayMode(GLWindow,&DesktopDisplayMode);
 
     sdlstate = INIT_STATES::SDL_CONTEXT_OK;
+    return GLWindow;
+}
+
+bool GLFrameWork::AddTextDisplay(){
+
+    sPoint p(10,10);
+    RenderText * t = new RenderText(_ResX,_ResY,p,_Shader);
+
+
+
+    // TextDraw * t = new TextDraw(_ResX,_ResY,p,_Shader);
+
+    _Texts.push_back(t);
+
+    //  string sCount = std::to_string( _Displays.size());
+
+
+    return true;
+}
+
+SDL_GLContext GLFrameWork::SDL_Context(){
+    return glContext;
+}
+
+SDL_Window* GLFrameWork::SDLWindow(){
     return GLWindow;
 }
 
@@ -183,17 +226,17 @@ bool GLFrameWork::HandleMessage(){
     while (SDL_PollEvent(&_Event))
     {
         switch(_Event.type) {
-            case SDL_KEYDOWN:
-                switch(_Event.key.keysym.sym) {
-                    case SDLK_ESCAPE:
-                        _Quit =true;
-                        break;
-                }
-            break;
-            case SDL_KEYUP:
-            break;
-            default:
+        case SDL_KEYDOWN:
+            switch(_Event.key.keysym.sym) {
+            case SDLK_ESCAPE:
+                _Quit =true;
                 break;
+            }
+            break;
+        case SDL_KEYUP:
+            break;
+        default:
+            break;
         }
     }
     return true;
@@ -212,8 +255,8 @@ void GLFrameWork::Run(){
         glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
 
         for(RenderText* elems:_Texts) {
-            elems->Draw();
-        }
+             elems->Draw();
+         }
 
 
 
@@ -229,7 +272,7 @@ void GLFrameWork::PrintOpenGLData(){
     printf("Version   %s\n",glGetString(GL_VERSION));
 }
 
-void GLFrameWork::DestroySDL(){  
+void GLFrameWork::DestroySDL(){
     if(GLWindow != nullptr)
         SDL_DestroyWindow(GLWindow);
 

@@ -1,5 +1,5 @@
-#ifndef RENDERTEXT_H
-#define RENDERTEXT_H
+#ifndef RENDERTEXT_KOPIE_H
+#define RENDERTEXT_KOPIE_H
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -46,10 +46,8 @@ public:
     RenderText(int resx, int resy, sPoint pos, Shader * sh);
 
     ~RenderText();
-    void initConstructor(int resx,int resy,Shader * sh);
+
     bool Init();
-    void SetText(std::string text );
-    string GetText(int index = 0);
     void Draw();
 protected:
     bool _AlignRight;
@@ -126,10 +124,10 @@ private:
     bool   _Dragging;
     Logger log;
 
-
+    void initConstructor(int resx,int resy,Shader * sh);
     void CalcSize(int &weite, int &height);
     void RenderPaintarea(GLfloat x, GLfloat y, GLfloat height);
     void RenderFrame(GLfloat x, GLfloat y);
 };
 
-#endif // RENDERTEXT_H
+#endif // RENDERTEXT_KOPIE_H

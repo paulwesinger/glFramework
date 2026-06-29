@@ -16,6 +16,8 @@ typedef enum{
     SDL_WINDOWCREATE_OK,
     SDL_WINDOWCREATE_FAILED,
 
+    SDL_ADD_CONTROL_OK,
+    SDL_ADD_CONTROL_FAILED,
     SDL_STATE_UNDEFINED
 
 }INIT_STATES;
@@ -46,34 +48,31 @@ public:
     SDL_DisplayMode getCurrentDisplayMode();
     string getCurrentDisplayModeAsString();
 
+    SDL_GLContext  SDL_Context();
+    SDL_Window * SDLWindow();
+
     // ***********************************
     // setters
     // ***********************************
     void setClearColor(float4 col);
-    void setClearColor(float r,float g, float b,float a);
+    void setClearColor(float r,float g, float b,float a= 1.0f);
 
     // ***********************************
-    // Add view Elemens
+    // init shader, clearcolor usw..
     // ***********************************
-
-    void Add_TextDisplay(sPoint pos);
-
-
+    bool initViewElements();
 
 protected:
     void sdl_die(string msg);
     bool HandleMessage();
-
-    // *******************************
-    // init shader, clearcolor usw..
-    // *******************************
-    bool initViewElements();
 
     string Logtext;
 
     SDL_GLContext glContext;
     SDL_Window * GLWindow =  nullptr;
     SDL_DisplayMode DesktopDisplayMode;
+
+    bool AddTextDisplay();
 
     int _ResX;
     int _ResY;
@@ -91,10 +90,6 @@ protected:
     // zb.: TextFenster, Controlls, 3D objects
     // ---------------------------------------------
     std::vector<RenderText*> _Texts;
-
-
-
-
 };
 
 #endif // GLFRAMEWORK_H
