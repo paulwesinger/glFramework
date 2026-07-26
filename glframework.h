@@ -1,14 +1,16 @@
 #ifndef GLFRAMEWORK_H
 #define GLFRAMEWORK_H
 
+#include "GLFrameWork_global.h"
+
 #include <string>
 #include </usr/include/SDL2/SDL.h>
-#include "GLFrameWork_global.h"
-#include "vartypes.h"
 
+#include "vartypes.h"
 #include "rendertext.h"
 
 using namespace std;
+
 
 typedef enum{
     SDL_CONTEXT_OK = 0,
@@ -21,6 +23,8 @@ typedef enum{
     SDL_STATE_UNDEFINED
 
 }INIT_STATES;
+
+namespace ENGINE{
 
 class GLFRAMEWORK_EXPORT GLFrameWork
 {
@@ -48,8 +52,8 @@ public:
     SDL_DisplayMode getCurrentDisplayMode();
     string getCurrentDisplayModeAsString();
 
-    SDL_GLContext  SDL_Context();
-    SDL_Window * SDLWindow();
+    // SDL_GLContext  SDL_Context();
+    //SDL_Window * SDLWindow();
 
     // ***********************************
     // setters
@@ -61,7 +65,7 @@ public:
     // init shader, clearcolor usw..
     // ***********************************
     bool initViewElements();
-
+    virtual bool AddTextDisplay();
 protected:
     void sdl_die(string msg);
     bool HandleMessage();
@@ -72,7 +76,7 @@ protected:
     SDL_Window * GLWindow =  nullptr;
     SDL_DisplayMode DesktopDisplayMode;
 
-    bool AddTextDisplay();
+
 
     int _ResX;
     int _ResY;
@@ -91,5 +95,6 @@ protected:
     // ---------------------------------------------
     std::vector<RenderText*> _Texts;
 };
+}
 
 #endif // GLFRAMEWORK_H

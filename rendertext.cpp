@@ -1,5 +1,9 @@
+#include <glew.h>
 #include "rendertext.h"
 #include <gtc/type_ptr.hpp>
+
+#include "gl_global.h"
+
 // Element Indices
 static const GLushort vertex_indices[] =
     {
@@ -56,8 +60,8 @@ static const GLchar * fs2D_src = {
 RenderText::RenderText(int resx, int resy,Shader * sh){
     _Shader = sh;
     _Pos = sPoint(10,10);
-    // initConstructor(resx,resy,sh);
-    // Init();
+     initConstructor(resx,resy,sh);
+     Init();
 
 }
 
@@ -65,8 +69,8 @@ RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh){
 
     _Shader = sh;
     _Pos = pos;
-    // initConstructor(resx,resy,sh);
-    // Init();
+     initConstructor(resx,resy,sh);
+     Init();
 
 }
 
@@ -235,157 +239,150 @@ void RenderText::Draw(){
 }
 
 bool RenderText::Init(){
-    // _ResX = resx;
-    // _ResY = resy;
-    // _RenderBottom = false;
-    // _RenderHeader = false;
-    // _HasBackground = false;
-    // _HasTexture = false;
-    // _AlignRight = false;
-    // _BackgroundColor = glm::vec4(0.0f,0.0f,0.8f,0.3f);
-    // _TextColor = glm::vec4(1.0f,1.0f,1.0f,1.0f);
-    // _Scale = 1.0f;
-    // _Pixelsize = 16;
-    // _MarginLeft = 5.0f;
-    // _MarginRight= 5.0f;
-    // _MarginY = 5.0f;
+    try{
 
-    // ---------------------------------------
-    //  Freetype2 init.
-    // ---------------------------------------
-    if (FT_Init_FreeType(&ft))
-        log.logwarn("Konnte Freetype nicht initialisieren !!","TextRender::Init");
-    else
-        log.loginfo("Freetype2 initialisiert ","TextRender::Init");
+        // ---------------------------------------
+        //  Freetype2 init.
+        // ---------------------------------------
+        if (FT_Init_FreeType(&ft))
+            log.logwarn("Konnte Freetype nicht initialisieren !!","TextRender::Init");
+        else
+            log.loginfo("Freetype2 initialisiert ","TextRender::Init");
 
 
-    if (FT_New_Face(ft, _Font.c_str(), 0, &face)) {
-        log.logwarn("Konnte Freetype2 Face nicht initialisieren","RenderText::Init");
+        if (FT_New_Face(ft, _Font.c_str(), 0, &face)) {
+            log.logwarn("Konnte Freetype2 Face nicht initialisieren","RenderText::Init");
+            return false;
+        }
+        else
+            log.loginfo("Freetype2 Face initialisiert ... ");
+
+
+        FT_Set_Pixel_Sizes(face, 0, _Pixelsize);
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
+        // Char 0 .. 127 einlesen
+        glActiveTexture(GL_TEXTURE0);
+
+        for (GLubyte c = 0; c < 128; c++)    {
+            // Load character glyph
+            if (FT_Load_Char(face, c, FT_LOAD_RENDER))
+            {
+                log.logwarn("ERROR::FREETYTPE: Failed to load Glyph","TextRender::Init");
+                continue;
+            }
+            // Generate texture
+            GLuint texture;
+            glGenTextures(1, &texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RED,
+                static_cast<GLsizei>(face->glyph->bitmap.width),
+                static_cast<GLsizei>(face->glyph->bitmap.rows),
+                0,
+                GL_RED,
+                GL_UNSIGNED_BYTE,
+                face->glyph->bitmap.buffer
+                );
+            // Set texture options
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            // Now store character for later use
+            Character character = {
+                texture,
+                glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
+                glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
+                face->glyph->advance.x,
+                face->glyph->bitmap.rows
+            };
+            Characters.insert(std::pair<GLchar, Character>(c, character));
+        } // for GLubyte
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        // Destroy FreeType once we're finished
+        FT_Done_Face(face);
+        FT_Done_FreeType(ft);
+        //  -----------------------------------------------
+        // VertexArraobject und VertexBufferObject für Text
+        // ------------------------------------------------
+        glGenVertexArrays(1,&_VAO);
+        glBindVertexArray(_VAO);
+        glGenBuffers(1,&_VBO);
+        glBindBuffer(GL_ARRAY_BUFFER,_VBO);
+
+        glBufferData(GL_ARRAY_BUFFER,
+                     //                 sizeof(vertex_positions),
+                     //                 vertex_positions,
+                     sizeof(GLfloat) * 6 * 4,
+                     nullptr,
+                     GL_DYNAMIC_DRAW);
+
+        glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE, 4 * sizeof(GLfloat),(void*)0);
+        glEnableVertexAttribArray(0);
+        // TextureCoordinates
+        glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        // Nicht benutzt - wäre für Color !
+        //glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat),(void*)(5* sizeof(float)));
+        //glEnableVertexAttribArray(2);
+        // --------------   Index
+        glGenBuffers(1,&_EBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_EBO);
+        glBufferData (GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof (vertex_indices),
+                     vertex_indices,
+                     GL_DYNAMIC_DRAW);
+
+
+        // ---------------------------------------------------------------
+        // Das ganze jetzt für Background ohne textur nur color
+        // An die Textlänge wird die breite angepasst
+        // ----------------------------------------------------------------
+        // VertexArray für Headline
+        glGenVertexArrays(1,&_bgVAO);
+        glBindVertexArray(_bgVAO);
+        // ****************************************************************
+        // ----------------------------------------------------------------
+        // Das ganze jetzt noch mal für den Mittelteil und die Eckteile
+        // ----------------------------------------------------------------
+        // VertexBuffer
+        glGenBuffers(1,&_bgVBO);
+        glBindBuffer(GL_ARRAY_BUFFER,_bgVBO);
+        glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*6*4, NULL, GL_DYNAMIC_DRAW);  // wird in paint angepasst
+
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
+        glEnableVertexAttribArray(0);
+        //TexturCoordinates
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)) );
+        glEnableVertexAttribArray(1);
+        //------------------------
+        //Elementbuffer
+        //---------------------
+        glGenBuffers(1,&_bgEBO);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bgEBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     sizeof(vertex_indices),
+                     vertex_indices,
+                     GL_DYNAMIC_DRAW);
+
+        //----------
+        // Aufräumen
+        //----------
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
+        glBindBuffer(GL_ARRAY_BUFFER,0);
+        glBindVertexArray(0);
+
+        return true;
+    }
+    catch(const exception e)
+    {
+        log.logError(e.what());
         return false;
     }
-    else
-        log.loginfo("Freetype2 Face initialisiert ... ");
-
-
-    FT_Set_Pixel_Sizes(face, 0, _Pixelsize);
-
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // Disable byte-alignment restriction
-    // Char 0 .. 127 einlesen
-    glActiveTexture(GL_TEXTURE0);
-
-    for (GLubyte c = 0; c < 128; c++)    {
-        // Load character glyph
-        if (FT_Load_Char(face, c, FT_LOAD_RENDER))
-        {
-            log.logwarn("ERROR::FREETYTPE: Failed to load Glyph","TextRender::Init");
-            continue;
-        }
-        // Generate texture
-        GLuint texture;
-        glGenTextures(1, &texture);
-        glBindTexture(GL_TEXTURE_2D, texture);
-        glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RED,
-            static_cast<GLsizei>(face->glyph->bitmap.width),
-            static_cast<GLsizei>(face->glyph->bitmap.rows),
-            0,
-            GL_RED,
-            GL_UNSIGNED_BYTE,
-            face->glyph->bitmap.buffer
-            );
-        // Set texture options
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        // Now store character for later use
-        Character character = {
-            texture,
-            glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
-            glm::ivec2(face->glyph->bitmap_left, face->glyph->bitmap_top),
-            face->glyph->advance.x,
-            face->glyph->bitmap.rows
-        };
-        Characters.insert(std::pair<GLchar, Character>(c, character));
-    } // for GLubyte
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-    // Destroy FreeType once we're finished
-    FT_Done_Face(face);
-    FT_Done_FreeType(ft);
-    //  -----------------------------------------------
-    // VertexArraobject und VertexBufferObject für Text
-    // ------------------------------------------------
-    glGenVertexArrays(1,&_VAO);
-    glBindVertexArray(_VAO);
-    glGenBuffers(1,&_VBO);
-    glBindBuffer(GL_ARRAY_BUFFER,_VBO);
-
-    glBufferData(GL_ARRAY_BUFFER,
-                 //                 sizeof(vertex_positions),
-                 //                 vertex_positions,
-                 sizeof(GLfloat) * 6 * 4,
-                 nullptr,
-                 GL_DYNAMIC_DRAW);
-
-    glVertexAttribPointer(0,2,GL_FLOAT,GL_FALSE, 4 * sizeof(GLfloat),(void*)0);
-    glEnableVertexAttribArray(0);
-    // TextureCoordinates
-    glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // Nicht benutzt - wäre für Color !
-    //glVertexAttribPointer(2,2,GL_FLOAT, GL_FALSE, 7 * sizeof(GLfloat),(void*)(5* sizeof(float)));
-    //glEnableVertexAttribArray(2);
-    // --------------   Index
-    glGenBuffers(1,&_EBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,_EBO);
-    glBufferData (GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof (vertex_indices),
-                 vertex_indices,
-                 GL_DYNAMIC_DRAW);
-
-
-    // ---------------------------------------------------------------
-    // Das ganze jetzt für Background ohne textur nur color
-    // An die Textlänge wird die breite angepasst
-    // ----------------------------------------------------------------
-    // VertexArray für Headline
-     glGenVertexArrays(1,&_bgVAO);
-     glBindVertexArray(_bgVAO);
-    // ****************************************************************
-    // ----------------------------------------------------------------
-    // Das ganze jetzt noch mal für den Mittelteil und die Eckteile
-    // ----------------------------------------------------------------
-    // VertexBuffer
-    glGenBuffers(1,&_bgVBO);
-    glBindBuffer(GL_ARRAY_BUFFER,_bgVBO);
-    glBufferData(GL_ARRAY_BUFFER,sizeof(GLfloat)*6*4, NULL, GL_DYNAMIC_DRAW);  // wird in paint angepasst
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat), (void*)0);
-    glEnableVertexAttribArray(0);
-    //TexturCoordinates
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),(void*)(2 * sizeof(float)) );
-    glEnableVertexAttribArray(1);
-    //------------------------
-    //Elementbuffer
-    //---------------------
-    glGenBuffers(1,&_bgEBO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _bgEBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                 sizeof(vertex_indices),
-                 vertex_indices,
-                 GL_DYNAMIC_DRAW);
-
-    //----------
-    // Aufräumen
-    //----------
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,0);
-    glBindBuffer(GL_ARRAY_BUFFER,0);
-    glBindVertexArray(0);
-
-    return true;
 }
 
 // -----------------------------------------
@@ -393,6 +390,9 @@ bool RenderText::Init(){
 // -----------------------------------------
 
 void RenderText::initConstructor(int resx, int resy, Shader *sh){
+
+    //SDL_GL_MakeCurrent(GLWindow,glContext);
+
     _Font = GNU_DEFAULT_FONT;
     _Shader = sh;
     _ResX = resx;

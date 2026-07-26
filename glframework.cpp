@@ -1,7 +1,11 @@
 #include <glew.h>
-#include "glframework.h"
 #include <sstream>
 
+#include <iostream>
+
+#include "glframework.h"
+
+using namespace  ENGINE;
 
 GLFrameWork::GLFrameWork(int resx,int resy) {
 
@@ -10,10 +14,10 @@ GLFrameWork::GLFrameWork(int resx,int resy) {
 
     _Quit = false;
 
-    if (initViewElements())
-        sdlstate = SDL_CONTEXT_OK;
-    else
-        sdlstate = SDL_CONTEXT_FAILED;
+    // if (InitSDL())
+    //     sdlstate = SDL_CONTEXT_OK;
+    // else
+    //     sdlstate = SDL_CONTEXT_FAILED;
 
 }
 
@@ -141,11 +145,6 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
     glewExperimental = GL_TRUE;
     glewInit();
 
-
-    SDL_GL_MakeCurrent(GLWindow,glContext);
-
-
-
     SDL_GL_SetSwapInterval(1);
 
 
@@ -160,28 +159,26 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
 
 bool GLFrameWork::AddTextDisplay(){
 
-    sPoint p(10,10);
-    RenderText * t = new RenderText(_ResX,_ResY,p,_Shader);
+    try{
+        sPoint p(10,10);
+        RenderText * t = new RenderText(_ResX,_ResY,p,_Shader);
 
-
-
-    // TextDraw * t = new TextDraw(_ResX,_ResY,p,_Shader);
-
-    _Texts.push_back(t);
-
-    //  string sCount = std::to_string( _Displays.size());
-
-
-    return true;
+        _Texts.push_back(t);
+        return true;
+    }
+    catch(exception e){
+        std::cout << e.what() << std::endl;
+        return false;
+    }
 }
 
-SDL_GLContext GLFrameWork::SDL_Context(){
-    return glContext;
-}
+// SDL_GLContext GLFrameWork::SDL_Context(){
+//     return glContext;
+// }
 
-SDL_Window* GLFrameWork::SDLWindow(){
-    return GLWindow;
-}
+// SDL_Window* GLFrameWork::SDLWindow(){
+//     return GLWindow;
+// }
 
 // ***********************************************
 // get - functions
