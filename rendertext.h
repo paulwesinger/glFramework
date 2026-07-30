@@ -15,6 +15,7 @@
 #include "vartypes.h"
 #include <logger.h>
 
+
 using namespace std;
 
 const string GNU_DEFAULT_FONT = "/usr/share/fonts/gnu-free/FreeSans.ttf";
@@ -23,7 +24,7 @@ const string GNU_DEFAULT_FONT_BOLD = "/usr/share/fonts/gnu-free/FreeSansBold.ttf
 const string GNU_DEFAULT_OBLIQUE_FONT = "/usr/share/fonts/gnu-free/FreeSansOblique.ttf";
 const string GNU_DEFAULT_OBLIQUE_FONT_BOLD = "/usr/share/fonts/gnu-free/FreeSansBoldOblique.ttf";
 
-struct Character {
+struct sCharacter {
     GLuint     TextureID;  // ID handle of the glyph texture
     glm::ivec2 Size;       // Size of glyph
     glm::ivec2 Bearing;    // Offset from baseline to left/top of glyph
@@ -31,25 +32,27 @@ struct Character {
     GLuint     Height;
 };
 
-// struct sTextfeld{
-//     GLfloat x;
-//     GLfloat y;
-//     GLfloat w;
-//     GLfloat h;
-// };
+struct sTextfeld{
+    GLfloat x;
+    GLfloat y;
+    GLfloat w;
+    GLfloat h;
+};
 
 
 class RenderText
 {
 public:
     RenderText(int resx, int resy,Shader * sh);
-    RenderText(int resx, int resy, sPoint pos, Shader * sh);
+    RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string name);
 
     ~RenderText();
-    void initConstructor(int resx,int resy,Shader * sh);
+    void initConstructor(int resx,int resy,sPoint pos,Shader * sh);
     bool Init();
     void SetText(std::string text );
     string GetText(int index = 0);
+
+    void SetHasBackground(bool hasbg);
     void Draw();
 protected:
     bool _AlignRight;
@@ -94,7 +97,10 @@ protected:
     // für alle 3 Renderer(Headline Paintarea, Bottom)
     GLuint projection_loc, framecolor_loc;
 
-    glm::mat4 projection;
+    glm::mat4 MatOrtho;
+
+    bool _HasTexture;
+    bool _HasBackGround;
 
     // -------------------------------
     // Includes und libs für Freetype2
@@ -107,16 +113,16 @@ protected:
     FT_UInt _Pixelsize;
     GLfloat _MarginLeft,_MarginRight, _MarginY;
 
-    std::map<GLchar, Character> Characters;
+    std::map<GLchar, sCharacter> Characters;
     //Hilfsfunktion zum einlesen der 5 Texturen für Textfeld
     bool GenTextfeldSegment(std::string image, unsigned int &tex);
-
+    void SetGlyphShader(GLuint s);
     sRect _Textfeld;
     std::vector<std::string> _StringList;
 
-    // std::string _PathHeadLine;
-    // std::string _PathTextField;
-    // std::string _PathBottomLine;
+    int _DisplayID;
+    std::string  _DisplayName;
+
 
 private:
     // hlpvars for drag
@@ -130,6 +136,7 @@ private:
     void CalcSize(int &weite, int &height);
     void RenderPaintarea(GLfloat x, GLfloat y, GLfloat height);
     void RenderFrame(GLfloat x, GLfloat y);
+
 };
 
 #endif // RENDERTEXT_H

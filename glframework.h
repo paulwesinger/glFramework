@@ -4,6 +4,7 @@
 #include "GLFrameWork_global.h"
 
 #include <string>
+#include <chrono>
 #include </usr/include/SDL2/SDL.h>
 
 #include "vartypes.h"
@@ -24,6 +25,27 @@ typedef enum{
 
 }INIT_STATES;
 
+namespace CLOCK {
+
+typedef std::chrono::high_resolution_clock Clock;
+
+class GameClock {
+public:
+    GameClock();
+    static void Start();
+    static void Stop();
+
+    static uint64_t Elapsed();
+
+    // static uint64_t _Elapsed;
+    // static Clock::time_point _Start;
+    // static Clock::time_point _End;
+protected:
+
+};
+
+}
+
 namespace ENGINE{
 
 class GLFRAMEWORK_EXPORT GLFrameWork
@@ -32,9 +54,8 @@ public:
     GLFrameWork(int resx, int resy);
     bool InitSDL();
     virtual void DestroySDL();
-    void Run();
+    virtual void Run();
 
-    string Log();
     INIT_STATES getInitState();
 
     void PrintDisplayModes();
@@ -52,8 +73,7 @@ public:
     SDL_DisplayMode getCurrentDisplayMode();
     string getCurrentDisplayModeAsString();
 
-    // SDL_GLContext  SDL_Context();
-    //SDL_Window * SDLWindow();
+    std::chrono::duration<double> Elapsed();
 
     // ***********************************
     // setters
@@ -65,18 +85,23 @@ public:
     // init shader, clearcolor usw..
     // ***********************************
     bool initViewElements();
-    virtual bool AddTextDisplay();
+    virtual bool AddTextDisplay(int x,int y,int id, string name);
+    virtual bool AddTextDisplayWithBackground(int x, int y,int id,string name);
 protected:
     void sdl_die(string msg);
     bool HandleMessage();
+
+    void SwapWindow();
+    void Restore3D();
+    void Prepare2D();
+
+    void ReleaseEngine();
 
     string Logtext;
 
     SDL_GLContext glContext;
     SDL_Window * GLWindow =  nullptr;
     SDL_DisplayMode DesktopDisplayMode;
-
-
 
     int _ResX;
     int _ResY;
@@ -93,7 +118,10 @@ protected:
     // View - Elements: in listen packen.
     // zb.: TextFenster, Controlls, 3D objects
     // ---------------------------------------------
-    std::vector<RenderText*> _Texts;
+    std::vector<RenderText*> _Displays;
+    std::chrono::duration<double> _Elapsed;
+
+
 };
 }
 

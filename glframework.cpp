@@ -2,10 +2,47 @@
 #include <sstream>
 
 #include <iostream>
+#include <chrono>
+
 
 #include "glframework.h"
 
 using namespace  ENGINE;
+using namespace  CLOCK;
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// Game Clock
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+static uint64_t _Elapsed;
+static Clock::time_point _Start;
+static Clock::time_point _End;
+
+
+GameClock::GameClock(){
+    _Elapsed = 0;
+}
+
+void GameClock::Start(){
+    _Start = Clock::now();
+}
+
+void GameClock::Stop()
+{
+
+}
+
+uint64_t GameClock::Elapsed(){
+    _End = Clock::now();
+    uint64_t ret = std::chrono::duration_cast<std::chrono::milliseconds>(_End - _Start).count();
+    _Start = _End;
+    return ret;
+
+}
+
+// ++++++++++++++++++++ End Game Clock +++++++++++++++++++
+
+
+
 
 GLFrameWork::GLFrameWork(int resx,int resy) {
 
@@ -14,11 +51,6 @@ GLFrameWork::GLFrameWork(int resx,int resy) {
 
     _Quit = false;
 
-    // if (InitSDL())
-    //     sdlstate = SDL_CONTEXT_OK;
-    // else
-    //     sdlstate = SDL_CONTEXT_FAILED;
-
 }
 
 
@@ -26,7 +58,6 @@ bool GLFrameWork::initViewElements(){
 
     Logtext += "Init Shader";
     _Shader = new Shader();
-
 
     // **************************
     // Standard grau
@@ -37,15 +68,7 @@ bool GLFrameWork::initViewElements(){
     _ClearColor.w = 1.0f;
     glClearColor(_ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
 
-  //  Logtext += "InitViewElements: Stelle Hintergrund auf (Grau) R: " + std::to_string(_ClearColor.x) + "G: " + std::to_string(_ClearColor.y) +
-    //           "B: " + std::to_string(_ClearColor.z);
-
-
     return true;
-}
-
-std::string GLFrameWork::Log(){
-    return Logtext;
 }
 
 SDL_Window* GLFrameWork:: GetGLWindow(){
@@ -75,7 +98,6 @@ void GLFrameWork::PrintDisplayModes(){
             catch ( ...) {
                 Logtext += "Konnte Display Mode[" + index + "] nicht ermitteln\n";
             }
-
         }
     }
 }
@@ -157,13 +179,13 @@ SDL_Window * GLFrameWork::CreateGLWindow(bool fullscreen,std::string caption){
     return GLWindow;
 }
 
-bool GLFrameWork::AddTextDisplay(){
+bool GLFrameWork::AddTextDisplayWithBackground(int x, int y,int id,string name){
 
     try{
-        sPoint p(10,10);
-        RenderText * t = new RenderText(_ResX,_ResY,p,_Shader);
-
-        _Texts.push_back(t);
+        sPoint p(x,y);
+        RenderText * t = new RenderText(_ResX,_ResY,p,_Shader,id,name);
+        t->SetHasBackground(true);
+        _Displays.push_back(t);
         return true;
     }
     catch(exception e){
@@ -172,16 +194,39 @@ bool GLFrameWork::AddTextDisplay(){
     }
 }
 
-// SDL_GLContext GLFrameWork::SDL_Context(){
-//     return glContext;
-// }
+bool GLFrameWork::AddTextDisplay(int x, int y,int id,string name){
 
-// SDL_Window* GLFrameWork::SDLWindow(){
-//     return GLWindow;
-// }
+    try{
+        sPoint p(x,y);
+        RenderText * t = new RenderText(_ResX,_ResY,p,_Shader,id,name);
+        t->SetHasBackground(false);
+        _Displays.push_back(t);
+        return true;
+    }
+    catch(exception e){
+        std::cout << e.what() << std::endl;
+        return false;
+    }
+}
+
+
+void GLFrameWork::Prepare2D() {
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(0);
+}
+
+void GLFrameWork::Restore3D() {
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+
+    glFrontFace(GL_CCW);
+    glEnable(GL_BLEND);
+    glDepthMask(1);
+}
 
 // ***********************************************
-// get - functions
+// set - functions
 // ***********************************************
 void GLFrameWork::setClearColor(float4 col){
     _ClearColor = col;
@@ -195,6 +240,12 @@ void GLFrameWork::setClearColor(float r, float g, float b, float a){
 // ***********************************************
 // get - functions
 // ***********************************************
+
+
+std::chrono::duration<double> GLFrameWork::Elapsed() {
+    return _Elapsed;
+}
+
 
 INIT_STATES GLFrameWork::getInitState(){
     return sdlstate;
@@ -239,27 +290,48 @@ bool GLFrameWork::HandleMessage(){
     return true;
 }
 
+void GLFrameWork::SwapWindow(){
+    SDL_GL_SwapWindow(GLWindow);
+}
+
 void GLFrameWork::Run(){
 
-    glEnable(GL_DEPTH_TEST);
+    // glEnable(GL_DEPTH_TEST);
 
-    while (! _Quit) {
+    // auto start = std::chrono::high_resolution_clock::now();
 
-        HandleMessage();
+    // while (! _Quit) {
 
-        glDepthFunc(GL_LEQUAL);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+    //     HandleMessage();
 
-        for(RenderText* elems:_Texts) {
-             elems->Draw();
-         }
+    //     glDepthFunc(GL_LEQUAL);
+    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //     glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
+
+    //     // +++++++++++++++++++++++++++++++++++
+    //     // Rendering 3D
+    //     // +++++++++++++++++++++++++++++++++++
+    //     //Restore3D();
 
 
 
-        SDL_GL_SwapWindow(GLWindow);
+    //     // +++++++++++++++++++++++++++++++++++
+    //     // Rendering 2D
+    //     // +++++++++++++++++++++++++++++++++++
+    //     Prepare2D();
+    //     for(RenderText* elems:_Displays) {
+    //          elems->Draw();
+    //      }
+
+    //     SDL_GL_SwapWindow(GLWindow);
+
+    //     auto end = std::chrono::high_resolution_clock::now();
+    //     _Elapsed = end - start;
+
+    //     start = end;
+
         //_Quit =true;
-    }
+    //}
 }
 
 void GLFrameWork::PrintOpenGLData(){
@@ -267,6 +339,16 @@ void GLFrameWork::PrintOpenGLData(){
     printf("Vendor :  %s\n",glGetString(GL_VENDOR));
     printf("Renderer  %s\n",glGetString(GL_RENDERER));
     printf("Version   %s\n",glGetString(GL_VERSION));
+}
+
+
+void GLFrameWork::ReleaseEngine(){
+
+    for(RenderText* elem: _Displays)
+    {
+        delete elem;
+    }
+    _Displays.clear();
 }
 
 void GLFrameWork::DestroySDL(){
