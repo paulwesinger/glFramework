@@ -32,16 +32,19 @@ typedef std::chrono::high_resolution_clock Clock;
 class GameClock {
 public:
     GameClock();
-    static void Start();
-    static void Stop();
+    void Start();
+    void Stop();
 
-    static uint64_t Elapsed();
+    uint64_t Elapsed();
 
-    // static uint64_t _Elapsed;
-    // static Clock::time_point _Start;
-    // static Clock::time_point _End;
+    string FPSasString(uint64_t el,string text);
+    double FPS(uint64_t el);
+
 protected:
-
+    std::chrono::duration<double>  _Elapsed;
+    Clock::time_point _Start;
+    Clock::time_point _End;
+    double fps = 0;
 };
 
 }

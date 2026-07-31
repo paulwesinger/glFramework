@@ -1,6 +1,6 @@
 #include <glew.h>
 #include <sstream>
-
+#include <iomanip>
 #include <iostream>
 #include <chrono>
 
@@ -13,17 +13,52 @@ using namespace  CLOCK;
 // Game Clock
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-static uint64_t _Elapsed;
-static Clock::time_point _Start;
-static Clock::time_point _End;
 
 
 GameClock::GameClock(){
-    _Elapsed = 0;
+
 }
 
 void GameClock::Start(){
     _Start = Clock::now();
+}
+
+
+string GameClock::FPSasString(uint64_t el, string text){
+
+    double fps = FPS(el);
+    string ret;
+    if (fps > 0){
+        std::ostringstream os;
+        os << std::fixed << std::setprecision(2)<< fps;
+        ret = "FPS " + os.str();
+    }
+    else
+        ret = text;
+
+    return ret;
+}
+
+double GameClock::FPS(uint64_t el){
+
+    static double framecount = 0;
+    static uint64_t elapsedtotal;
+
+    framecount ++;
+    elapsedtotal += el;
+
+    // +++++++++++++++++++++++
+    // Berechnung in millisecs
+    // +++++++++++++++++++++++
+    if (elapsedtotal >= 1000) {
+        elapsedtotal = 0;
+        double tmp = framecount;
+        framecount = 0;
+        return tmp;
+    }
+    else
+        return 0;
+
 }
 
 void GameClock::Stop()

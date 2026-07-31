@@ -57,9 +57,17 @@ void RenderText::SetHasBackground(bool hasbg){
     _HasBackGround = hasbg;
 }
 
-void RenderText::SetText(string text){
+void RenderText::SetText(string text, int index){
     try{
-        _StringList.push_back(text);
+
+        if (index < 0){ // add to list
+           _StringList.push_back(text);
+        }
+        else {
+            if(index < _StringList.size())
+                _StringList.at(index) = text;
+        }
+
     }
     catch(const std::exception& e)
     {

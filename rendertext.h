@@ -49,7 +49,7 @@ public:
     ~RenderText();
     void initConstructor(int resx,int resy,sPoint pos,Shader * sh);
     bool Init();
-    void SetText(std::string text );
+    void SetText(std::string text, int index = -1 );
     string GetText(int index = 0);
 
     void SetHasBackground(bool hasbg);
