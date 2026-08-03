@@ -25,6 +25,38 @@ typedef enum{
 
 }INIT_STATES;
 
+// ++++++++++++++++++++++++++
+// Keyboard Buttons - Pressed
+// ++++++++++++++++++++++++++
+
+typedef enum{
+    BTN_PRESS_NO = 0,
+    BTN_PRESS_LEFT_KEY,
+    BTN_PRESS_RIGHT_KEY,
+    BTN_PRESS_UP_KEY,
+    BTN_PRESS_DOWN_KEY,
+    BTN_PRESS_SPACE_KEY,
+}BTN_PRESS;
+
+
+// ++++++++++++++++++++++++++
+// Keyboard Buttons - Up
+// ++++++++++++++++++++++++++
+typedef enum{
+    BTN_UP_NO = 100,
+    BTN_UP_LEFT_KEY,
+    BTN_UP_RIGHT_KEY,
+    BTN_UP_UP_KEY,
+    BTN_UP_DOWN_KEY,
+    BTN_UP_SPACE_KEY,
+    BTN_UP_ESC
+}BTN_UP;
+
+union KEYBOARDSTATE{
+    BTN_UP BtnStateUP;
+    BTN_PRESS BtnStatePress;
+};
+
 namespace CLOCK {
 
 typedef std::chrono::high_resolution_clock Clock;
@@ -59,6 +91,9 @@ public:
     virtual void DestroySDL();
     virtual void Run();
 
+    virtual void HandleMessage();
+    virtual KEYBOARDSTATE KeyState();
+
     INIT_STATES getInitState();
 
     void PrintDisplayModes();
@@ -92,13 +127,14 @@ public:
     virtual bool AddTextDisplayWithBackground(int x, int y,int id,string name);
 protected:
     void sdl_die(string msg);
-    bool HandleMessage();
+
 
     void SwapWindow();
     void Restore3D();
     void Prepare2D();
 
     void ReleaseEngine();
+  //  virtual void GetKey() = 0;
 
     string Logtext;
 
@@ -111,11 +147,15 @@ protected:
     bool _Quit;
 
     Shader * _Shader;
-
     SDL_Event _Event;
+
     float4 _ClearColor;
     // State Handling
     INIT_STATES sdlstate;
+
+    // +++++++++++++++++++++++++++++++++
+    //
+    KEYBOARDSTATE KeyboardState;
 
     //----------------------------------------------
     // View - Elements: in listen packen.

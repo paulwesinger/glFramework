@@ -293,36 +293,75 @@ SDL_DisplayMode GLFrameWork::getCurrentDisplayMode(){
 string GLFrameWork::getCurrentDisplayModeAsString(){
     stringstream stream;
 
-    stream  <<"Aktueller Display- Modus:\n" <<
+    stream << "Aktueller Display- Modus:\n" <<
         to_string(DesktopDisplayMode.w) << " x " << to_string(DesktopDisplayMode.h)  <<
         " Format: " << DesktopDisplayMode.format;
 
     return stream.str();
 }
 
+// void GLFrameWork::GetKey(){
+// }
+
+KEYBOARDSTATE GLFrameWork::KeyState(){
+     const Uint8 * keystate = SDL_GetKeyboardState(NULL);
+
+    if (keystate[SDL_SCANCODE_W] || keystate[SDL_SCANCODE_UP]) {
+        KeyboardState.BtnStatePress = BTN_PRESS_UP_KEY;
+    }
+    else
+    if (keystate[SDL_SCANCODE_S] || keystate[SDL_SCANCODE_DOWN]) {
+        KeyboardState.BtnStatePress = BTN_PRESS_DOWN_KEY;
+    }
+    else
+    if (keystate[SDL_SCANCODE_A] || keystate[SDL_SCANCODE_LEFT]) {
+        KeyboardState.BtnStatePress = BTN_PRESS_LEFT_KEY;
+    }
+    else
+    if (keystate[SDL_SCANCODE_D] || keystate[SDL_SCANCODE_RIGHT]) {
+        KeyboardState.BtnStatePress = BTN_PRESS_RIGHT_KEY;
+    }
+    else
+    if (keystate[SDL_SCANCODE_KP_SPACE]) {
+        KeyboardState.BtnStatePress = BTN_PRESS_SPACE_KEY;
+    }
+    else
+        KeyboardState.BtnStatePress = BTN_PRESS_NO;
+
+    return KeyboardState;
+
+
+}
 // **********************************************
 // event handling
 // **********************************************
-bool GLFrameWork::HandleMessage(){
-
+void GLFrameWork::HandleMessage(){
 
     while (SDL_PollEvent(&_Event))
     {
-        switch(_Event.type) {
-        case SDL_KEYDOWN:
+        switch(_Event.type) {          
+
+            case SDL_KEYUP:
             switch(_Event.key.keysym.sym) {
-            case SDLK_ESCAPE:
-                _Quit =true;
-                break;
-            }
-            break;
-        case SDL_KEYUP:
-            break;
-        default:
-            break;
+                case SDLK_ESCAPE:
+                _Quit =true; break;
+                    //KeyboardState.BtnStateUP = BTN_UP_ESC; GetKey(); break;
+                case SDLK_LEFT:
+                    //KeyboardState.BtnStateUP = BTN_UP_LEFT_KEY; GetKey(); break;
+                case SDLK_RIGHT:
+                    //KeyboardState.BtnStateUP = BTN_UP_RIGHT_KEY; GetKey(); break;
+                case SDLK_DOWN:
+                    //KeyboardState.BtnStateUP = BTN_UP_DOWN_KEY; GetKey(); break;
+                case SDLK_UP:
+                    //KeyboardState.BtnStateUP = BTN_UP_UP_KEY; GetKey(); break;
+                case SDLK_SPACE:
+                    //KeyboardState.BtnStateUP = BTN_UP_SPACE_KEY; GetKey(); break;
+                default:
+                    break;
+                    //KeyboardState.BtnStateUP = BTN_UP_NO; GetKey();
+            }   //switch
         }
     }
-    return true;
 }
 
 void GLFrameWork::SwapWindow(){
@@ -331,42 +370,6 @@ void GLFrameWork::SwapWindow(){
 
 void GLFrameWork::Run(){
 
-    // glEnable(GL_DEPTH_TEST);
-
-    // auto start = std::chrono::high_resolution_clock::now();
-
-    // while (! _Quit) {
-
-    //     HandleMessage();
-
-    //     glDepthFunc(GL_LEQUAL);
-    //     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    //     glClearColor( _ClearColor.x, _ClearColor.y, _ClearColor.z, _ClearColor.w);
-
-    //     // +++++++++++++++++++++++++++++++++++
-    //     // Rendering 3D
-    //     // +++++++++++++++++++++++++++++++++++
-    //     //Restore3D();
-
-
-
-    //     // +++++++++++++++++++++++++++++++++++
-    //     // Rendering 2D
-    //     // +++++++++++++++++++++++++++++++++++
-    //     Prepare2D();
-    //     for(RenderText* elems:_Displays) {
-    //          elems->Draw();
-    //      }
-
-    //     SDL_GL_SwapWindow(GLWindow);
-
-    //     auto end = std::chrono::high_resolution_clock::now();
-    //     _Elapsed = end - start;
-
-    //     start = end;
-
-        //_Quit =true;
-    //}
 }
 
 void GLFrameWork::PrintOpenGLData(){
