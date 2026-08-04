@@ -10,20 +10,26 @@ VERSION = 1.0.2
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    baseobject.cpp \
+    defaults.cpp \
     errorlogs.cpp \
     fileutil.cpp \
     glframework.cpp \
+    imageloader.cpp \
     rendertext.cpp \
     shader.cpp \
-    utils.cpp \
-    vartypes.cpp
+    utils.cpp
 
 HEADERS += \
     GLFrameWork_global.h \
+    baseobject.h \
+    defaults.h \
+    enums.h \
     errorlogs.h \
     fileutil.h \
     gl_global.h \
     glframework.h \
+    imageloader.h \
     rendertext.h \
     shader.h \
     utils.h \

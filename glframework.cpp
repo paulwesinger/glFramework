@@ -263,12 +263,12 @@ void GLFrameWork::Restore3D() {
 // ***********************************************
 // set - functions
 // ***********************************************
-void GLFrameWork::setClearColor(float4 col){
+void GLFrameWork::setClearColor(sFloat4 col){
     _ClearColor = col;
 }
 
 void GLFrameWork::setClearColor(float r, float g, float b, float a){
-    float4 col= {r,g,b,a};
+    sFloat4 col= {r,g,b,a};
     _ClearColor = col;
 }
 

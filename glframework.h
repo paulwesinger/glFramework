@@ -116,7 +116,7 @@ public:
     // ***********************************
     // setters
     // ***********************************
-    void setClearColor(float4 col);
+    void setClearColor(sFloat4 col);
     void setClearColor(float r,float g, float b,float a= 1.0f);
 
     // ***********************************
@@ -149,7 +149,7 @@ protected:
     Shader * _Shader;
     SDL_Event _Event;
 
-    float4 _ClearColor;
+    sFloat4 _ClearColor;
     // State Handling
     INIT_STATES sdlstate;
 
