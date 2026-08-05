@@ -3,6 +3,7 @@
 
 #include <glm.hpp>
 #include "enums.h"
+#include <string>
 
 typedef void (*FP)();  // Zeiger auf Funktion wird für eventhandling gebraucht
 typedef void (*FPB)(bool);

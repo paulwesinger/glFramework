@@ -1,10 +1,11 @@
 #include "imageloader.h"
 
-ImageLoader::ImageLoader(string path) { _Path = path; }
+ENGINE::ImageLoader::ImageLoader(string path) { _Path = path; }
+ENGINE::ImageLoader::ImageLoader() { _Path = ""; }
+ENGINE::ImageLoader::~ImageLoader(){}
 
-ImageLoader::~ImageLoader(){}
-
-SDL_Surface * ImageLoader::getSurface(string  path,string obj){
+SDL_Surface * ENGINE::ImageLoader::getSurface(string  path,string obj){
+    try{
 
     SDL_Surface * surf = IMG_Load( path.c_str() );
     if ( surf ) {
@@ -16,10 +17,16 @@ SDL_Surface * ImageLoader::getSurface(string  path,string obj){
         Logger::logwarn("Warning: Image " + path + " not loaded ! created a template image ! Please Check Path.", obj);
         return  surf;
     }
+    }
+    catch(exception e){
+        Logger::logError( e.what());
+        return nullptr;
+    }
+    return nullptr;
 
 }
 
-SDL_Surface * ImageLoader::loadStandardSurface(){
+SDL_Surface * ENGINE::ImageLoader::loadStandardSurface(){
 
     return IMG_Load(STANDARDIMAGE.c_str());
 }

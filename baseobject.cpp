@@ -78,7 +78,8 @@ bool BaseObject::addTexture(std::string path, uint activetexture) {
         return false;
     }
 
-    SDL_Surface * surface = ImageLoader::getSurface(IMAGEPATH::ROOT + path, "BaseObject::addTexture");
+    ENGINE::ImageLoader imgloader;
+    SDL_Surface * surface = imgloader.getSurface(IMAGEPATH::ROOT + path, "BaseObject::addTexture");
     if ( surface ) {
 
         int width = surface->w;
@@ -126,9 +127,10 @@ bool BaseObject::addTexture(std::vector<std::string> path, std::string obj) {
         return false;
     }
 
+    ENGINE::ImageLoader imgloader;
     for ( uint i = 0; i< path.size(); i++) {
 
-        SDL_Surface * surface = ImageLoader::getSurface(IMAGEPATH::ROOT + path[i], "BaseObject::Init");
+        SDL_Surface * surface = imgloader.getSurface(IMAGEPATH::ROOT + path[i], "BaseObject::Init");
         if ( surface ) {
             int width = surface->w;
             int height = surface->h;

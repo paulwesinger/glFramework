@@ -40,103 +40,104 @@ struct sTextfeld{
 };
 
 
-class RenderText
-{
-public:
-    RenderText(int resx, int resy,Shader * sh);
-    RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string name);
+namespace ENGINE {
+    class RenderText
+    {
+    public:
+        RenderText(int resx, int resy,Shader * sh);
+        RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string name);
 
-    ~RenderText();
-    void initConstructor(int resx,int resy,sPoint pos,Shader * sh);
-    bool Init();
-    void SetText(std::string text, int index = -1 );
-    string GetText(int index = 0);
+        ~RenderText();
+        void initConstructor(int resx,int resy,sPoint pos,Shader * sh);
+        bool Init();
+        void SetText(std::string text, int index = -1 );
+        string GetText(int index = 0);
 
-    void SetHasBackground(bool hasbg);
-    void Draw();
-protected:
-    bool _AlignRight;
-    bool _FAILED;
-    GLfloat _Scale;
+        void SetHasBackground(bool hasbg);
+        void Draw();
+    protected:
+        bool _AlignRight;
+        bool _FAILED;
+        GLfloat _Scale;
 
-    glm::vec4 _TextColor;
-    glm::vec4 _BackgroundColor;
+        glm::vec4 _TextColor;
+        glm::vec4 _BackgroundColor;
 
-    int _ResX;
-    int _ResY;
+        int _ResX;
+        int _ResY;
 
-    sPoint _Pos;
+        sPoint _Pos;
 
-    GLfloat posX;
-    GLfloat posY;
+        GLfloat posX;
+        GLfloat posY;
 
-    GLuint _VAO;
-    GLuint _VBO;
-    GLuint _EBO;
+        GLuint _VAO;
+        GLuint _VBO;
+        GLuint _EBO;
 
-    // Buffers und arrays für Background
-    GLuint _bgVAO;
-    GLuint _bgVBO;
-    GLuint _bgEBO;
+        // Buffers und arrays für Background
+        GLuint _bgVAO;
+        GLuint _bgVBO;
+        GLuint _bgEBO;
 
-    Shader * _Shader;
-    // ints for shader returns
-    int vs;
-    int fs;
+        Shader * _Shader;
+        // ints for shader returns
+        int vs;
+        int fs;
 
-    // -----------------------
-    // Shader für das Textfeld
-    //------------------------
-    int vs_textfeld;
-    int fs_textfeld;
-    uint _TextureShader,_GlyphShader,_ColorShader,_CurrentShader;
+        // -----------------------
+        // Shader für das Textfeld
+        //------------------------
+        int vs_textfeld;
+        int fs_textfeld;
+        uint _TextureShader,_GlyphShader,_ColorShader,_CurrentShader;
 
-    GLint mv_projectloc;
-    GLint uniform_colorloc;
-    // uniformlocations in textfeldshader --> nur einmal setzen ,
-    // für alle 3 Renderer(Headline Paintarea, Bottom)
-    GLuint projection_loc, framecolor_loc;
+        GLint mv_projectloc;
+        GLint uniform_colorloc;
+        // uniformlocations in textfeldshader --> nur einmal setzen ,
+        // für alle 3 Renderer(Headline Paintarea, Bottom)
+        GLuint projection_loc, framecolor_loc;
 
-    glm::mat4 MatOrtho;
+        glm::mat4 MatOrtho;
 
-    bool _HasTexture;
-    bool _HasBackGround;
+        bool _HasTexture;
+        bool _HasBackGround;
 
-    // -------------------------------
-    // Includes und libs für Freetype2
-    // -------------------------------
-    FT_Library ft;
-    FT_Face face;
-    std::string _Font;
+        // -------------------------------
+        // Includes und libs für Freetype2
+        // -------------------------------
+        FT_Library ft;
+        FT_Face face;
+        std::string _Font;
 
-    // Einige Felder für look and feel:
-    FT_UInt _Pixelsize;
-    GLfloat _MarginLeft,_MarginRight, _MarginY;
+        // Einige Felder für look and feel:
+        FT_UInt _Pixelsize;
+        GLfloat _MarginLeft,_MarginRight, _MarginY;
 
-    std::map<GLchar, sCharacter> Characters;
-    //Hilfsfunktion zum einlesen der 5 Texturen für Textfeld
-    bool GenTextfeldSegment(std::string image, unsigned int &tex);
-    void SetGlyphShader(GLuint s);
-    sRect _Textfeld;
-    std::vector<std::string> _StringList;
+        std::map<GLchar, sCharacter> Characters;
+        //Hilfsfunktion zum einlesen der 5 Texturen für Textfeld
+        bool GenTextfeldSegment(std::string image, unsigned int &tex);
+        void SetGlyphShader(GLuint s);
+        sRect _Textfeld;
+        std::vector<std::string> _StringList;
 
-    int _DisplayID;
-    std::string  _DisplayName;
-
-
-private:
-    // hlpvars for drag
-    int distX;
-    int distY;
-    sRect  interSectHeadline;
-    bool   _Dragging;
-    Logger log;
+        int _DisplayID;
+        std::string  _DisplayName;
 
 
-    void CalcSize(int &weite, int &height);
-    void RenderPaintarea(GLfloat x, GLfloat y, GLfloat height);
-    void RenderFrame(GLfloat x, GLfloat y);
+    private:
+        // hlpvars for drag
+        int distX;
+        int distY;
+        sRect  interSectHeadline;
+        bool   _Dragging;
+        Logger log;
 
-};
 
+        void CalcSize(int &weite, int &height);
+        void RenderPaintarea(GLfloat x, GLfloat y, GLfloat height);
+        void RenderFrame(GLfloat x, GLfloat y);
+
+    };
+}
 #endif // RENDERTEXT_H

@@ -16,7 +16,7 @@ static const GLushort vertex_indices[] =
 // Construct / Destruct
 // -------------------------------------------
 
-RenderText::RenderText(int resx, int resy,Shader * sh){
+ENGINE::RenderText::RenderText(int resx, int resy,Shader * sh){
     _Shader = sh;
 
     sPoint p(10,10);
@@ -31,7 +31,7 @@ RenderText::RenderText(int resx, int resy,Shader * sh){
     Init();
 }
 
-RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string name){
+ENGINE::RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string name){
 
     _DisplayID = id;
     _DisplayName = name;
@@ -48,16 +48,16 @@ RenderText::RenderText(int resx, int resy, sPoint pos, Shader * sh,int id,string
 
 }
 
-RenderText::~RenderText(){
+ENGINE::RenderText::~RenderText(){
 
 }
 
 
-void RenderText::SetHasBackground(bool hasbg){
+void ENGINE::RenderText::SetHasBackground(bool hasbg){
     _HasBackGround = hasbg;
 }
 
-void RenderText::SetText(string text, int index){
+void ENGINE::RenderText::SetText(string text, int index){
     try{
 
         if (index < 0){ // add to list
@@ -75,7 +75,7 @@ void RenderText::SetText(string text, int index){
     }
 }
 
-string RenderText::GetText(int index){
+string ENGINE::RenderText::GetText(int index){
 
     try{
         return _StringList[0];
@@ -85,11 +85,11 @@ string RenderText::GetText(int index){
     }
 }
 
-void RenderText::SetGlyphShader(GLuint s) {
+void ENGINE::RenderText::SetGlyphShader(GLuint s) {
     _GlyphShader = s;
 }
 
-bool RenderText::Init(){
+bool ENGINE::RenderText::Init(){
 
 
     // ---------------------------------------
@@ -230,7 +230,7 @@ bool RenderText::Init(){
 
 }
 
-void RenderText::RenderPaintarea(GLfloat x, GLfloat y, GLfloat height) {
+void ENGINE::RenderText::RenderPaintarea(GLfloat x, GLfloat y, GLfloat height) {
 
     // Standard Masse der images !!
     GLfloat w = _Textfeld.w;
@@ -259,7 +259,7 @@ void RenderText::RenderPaintarea(GLfloat x, GLfloat y, GLfloat height) {
 }
 
 
-void RenderText::CalcSize(int &weite, int &height) {
+void ENGINE::RenderText::CalcSize(int &weite, int &height) {
     // Breite ermitteln:
     std::string::const_iterator c;
     GLfloat feldweite = 0.0f;
@@ -282,7 +282,7 @@ void RenderText::CalcSize(int &weite, int &height) {
     height = feldhoehe * count * _Scale;
 }
 
-void RenderText::Draw(){
+void ENGINE::RenderText::Draw(){
 
     GLfloat _x = posX;
     GLfloat _y = posY;
@@ -423,7 +423,7 @@ void RenderText::Draw(){
     glBindTexture(GL_TEXTURE_2D,0);
 }
 
-bool RenderText::GenTextfeldSegment(std::string image, unsigned int &tex){
+bool ENGINE::RenderText::GenTextfeldSegment(std::string image, unsigned int &tex){
     // std::string imagepath = image;
     // //glBindTexture(GL_TEXTURE_2D,tex);
     // SDL_Surface * surface;
@@ -459,7 +459,7 @@ bool RenderText::GenTextfeldSegment(std::string image, unsigned int &tex){
 // privates:
 // -----------------------------------------
 
-void RenderText::initConstructor(int resx, int resy, sPoint pos, Shader *sh){
+void ENGINE::RenderText::initConstructor(int resx, int resy, sPoint pos, Shader *sh){
 
     //SDL_GL_MakeCurrent(GLWindow,glContext);
 
@@ -478,7 +478,7 @@ void RenderText::initConstructor(int resx, int resy, sPoint pos, Shader *sh){
     _AlignRight = false;
 }
 
-void RenderText::RenderFrame(GLfloat x, GLfloat y) {
+void ENGINE::RenderText::RenderFrame(GLfloat x, GLfloat y) {
     // Standard Masse der images !!
     GLfloat w = _Textfeld.w;
     GLfloat h = 16.0f;

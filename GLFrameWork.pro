@@ -10,6 +10,8 @@ VERSION = 1.0.2
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    base.cpp \
+    base2dobject.cpp \
     baseobject.cpp \
     defaults.cpp \
     errorlogs.cpp \
@@ -22,6 +24,8 @@ SOURCES += \
 
 HEADERS += \
     GLFrameWork_global.h \
+    base.h \
+    base2dobject.h \
     baseobject.h \
     defaults.h \
     enums.h \
@@ -68,8 +72,9 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/rele
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../../usr/lib64/debug/ -lSDL2_image
 else:unix: LIBS += -L$$PWD/../../../../usr/lib64/ -lSDL2_image
 
-INCLUDEPATH += $$PWD/../../../../usr/include/SDL2
-DEPENDPATH += $$PWD/../../../../usr/include/SDL2
+#INCLUDEPATH += $$PWD/../../../../usr/include/SDL2
+INCLUDEPATH += /usr/include/SDL2
+DEPENDPATH += /usr/include/SDL2
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../Logger/build/Desktop-Release/release/ -lLogger
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../Logger/build/Desktop-Release/debug/ -lLogger
