@@ -115,6 +115,7 @@ void GLFrameWork::PrintDisplayModes(){
     int numDisplaymodes = SDL_GetNumDisplayModes(0);
     Logtext += "Num Display modes: " + std::to_string(numDisplaymodes);
 
+    cout << Logtext << endl;
     // Alle Display modes auflisten:
 
     for(int j = 0; j < SDL_GetNumVideoDisplays(); j++)
@@ -129,6 +130,8 @@ void GLFrameWork::PrintDisplayModes(){
 
                 // todo: Pixelformat auswerten
                 Logtext += "Display : " + std::to_string(j) + " Resolution Mode[" + index+ "] : " + w + "x" + h + "\n";
+                cout << "Display : " << std::to_string(j) << " Resolution Mode[" << index << "] : " <<  w << "x" << h << std::endl;
+
             }
             catch ( ...) {
                 Logtext += "Konnte Display Mode[" + index + "] nicht ermitteln\n";
@@ -139,7 +142,7 @@ void GLFrameWork::PrintDisplayModes(){
 
 bool GLFrameWork::InitSDL(){
 
-    int ret = SDL_Init(SDL_INIT_VIDEO);
+    int ret = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     if (ret != 0)
         return ret;
 

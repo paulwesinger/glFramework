@@ -162,6 +162,10 @@ protected:
     // zb.: TextFenster, Controlls, 3D objects
     // ---------------------------------------------
     std::vector<RenderText*> _Displays;
+
+    // ---------------------------------------------
+    // Chrone für zeit per frame
+    // ---------------------------------------------
     std::chrono::duration<double> _Elapsed;
 
 
