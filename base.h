@@ -22,7 +22,7 @@ namespace ENGINE {
         virtual void setWidth( int w);
         virtual void setHeight( int h);
         virtual void setSize( int w, int h);
-        virtual void setPos(int x, int y);
+
         virtual void setColor(glm::vec4 col);
         virtual void setBackgroundColor(glm::vec4 col);
         virtual void setDisablecolor(glm::vec4 disCol);
@@ -46,6 +46,7 @@ namespace ENGINE {
 
         virtual bool IsEnabled();
 
+        void setPos(int x, int y);
     protected:
         sPoint _Pos;
         sSize  _Size;

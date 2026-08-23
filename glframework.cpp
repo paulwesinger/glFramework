@@ -348,20 +348,20 @@ void GLFrameWork::HandleMessage(){
             switch(_Event.key.keysym.sym) {
                 case SDLK_ESCAPE:
                 _Quit =true; break;
-                    //KeyboardState.BtnStateUP = BTN_UP_ESC; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_ESC;  break;
                 case SDLK_LEFT:
-                    //KeyboardState.BtnStateUP = BTN_UP_LEFT_KEY; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_LEFT_KEY; break;
                 case SDLK_RIGHT:
-                    //KeyboardState.BtnStateUP = BTN_UP_RIGHT_KEY; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_RIGHT_KEY; break;
                 case SDLK_DOWN:
-                    //KeyboardState.BtnStateUP = BTN_UP_DOWN_KEY; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_DOWN_KEY; break;
                 case SDLK_UP:
-                    //KeyboardState.BtnStateUP = BTN_UP_UP_KEY; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_UP_KEY; break;
                 case SDLK_SPACE:
-                    //KeyboardState.BtnStateUP = BTN_UP_SPACE_KEY; GetKey(); break;
+                    KeyboardState.BtnStateUP = BTN_UP_SPACE_KEY; break;
                 default:
                     break;
-                    //KeyboardState.BtnStateUP = BTN_UP_NO; GetKey();
+                    KeyboardState.BtnStateUP = BTN_UP_NO;
             }   //switch
         }
     }
