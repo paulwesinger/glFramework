@@ -4,7 +4,7 @@ using namespace ENGINE;
 
 Base::Base()
 {
-
+    _InstanceName = "Noname";
 }
 Base::~Base() {}
 
@@ -86,6 +86,12 @@ void Base::disable(){
 void Base::enable(){
     _Enable = true;
 }
+
+void Base::setInstanceName(std::string name) {
+    _InstanceName = name;
+}
+
+std::string Base::getInstanceName() { return _InstanceName; }
 
 //------------------------------------------------------------------------
 //Draging

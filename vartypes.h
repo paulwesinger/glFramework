@@ -7,6 +7,7 @@
 
 typedef void (*FP)();  // Zeiger auf Funktion wird für eventhandling gebraucht
 typedef void (*FPB)(bool);
+typedef bool (*BFP)();
 
 typedef struct{
     float x;

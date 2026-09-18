@@ -47,9 +47,15 @@ namespace ENGINE {
         virtual bool IsEnabled();
 
         void setPos(int x, int y);
+        void setInstanceName(std::string name);
+
+        std::string getInstanceName();
+
     protected:
         sPoint _Pos;
         sSize  _Size;
+
+        std::string _InstanceName;
 
         glm::vec4 _Color;
         glm::vec4 _BackgroundColor;

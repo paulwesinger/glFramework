@@ -76,6 +76,7 @@ protected:
     std::chrono::duration<double>  _Elapsed;
     Clock::time_point _Start;
     Clock::time_point _End;
+
     double fps = 0;
 };
 

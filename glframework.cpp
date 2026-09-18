@@ -23,7 +23,6 @@ void GameClock::Start(){
     _Start = Clock::now();
 }
 
-
 string GameClock::FPSasString(uint64_t el, string text){
 
     double fps = FPS(el);
@@ -38,6 +37,8 @@ string GameClock::FPSasString(uint64_t el, string text){
 
     return ret;
 }
+
+
 
 double GameClock::FPS(uint64_t el){
 
