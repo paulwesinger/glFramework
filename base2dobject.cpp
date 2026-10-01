@@ -165,6 +165,10 @@ bool ENGINE::BaseObject2D::Init(int resx, int resy)
     return true;
 }
 
+std::string ENGINE::BaseObject2D::getImagePath(){
+    return _ImagePath;
+}
+
 void ENGINE::BaseObject2D::setImage(std::string path) {
     _ImagePath = path;
 }

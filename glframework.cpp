@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <iostream>
 #include <chrono>
+#include <future>
 
 
 #include "glframework.h"
@@ -18,6 +19,34 @@ using namespace  CLOCK;
 GameClock::GameClock(){
 
 }
+
+
+
+// Ist jetzt noch unbrauchbar-> als thread im hintergrund starten !!
+void GameClock::StartTimer(uint64_t timetoshot, FP callback){
+//     if (callback == nullptr) return;
+
+//     TimerCallback = callback;
+
+//     _TimerStart = Clock::now();
+
+//     std::chrono::time_point<std::chrono::steady_clock> endtime;
+//     while (std::chrono::duration < endtime.duration){
+
+
+//       //  tp = std::
+
+
+//       //  uint64_t ret = std::chrono::duration_cast<std::chrono::milliseconds>(_End - _Start).count();
+
+
+
+//         std::cout << "Test " << std::endl;
+//     }
+//     TimerCallback();
+ }
+
+
 
 void GameClock::Start(){
     _Start = Clock::now();
@@ -143,7 +172,7 @@ void GLFrameWork::PrintDisplayModes(){
 
 bool GLFrameWork::InitSDL(){
 
-    int ret = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    int ret = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK);
     if (ret != 0)
         return ret;
 
@@ -360,6 +389,11 @@ void GLFrameWork::HandleMessage(){
                     KeyboardState.BtnStateUP = BTN_UP_UP_KEY; break;
                 case SDLK_SPACE:
                     KeyboardState.BtnStateUP = BTN_UP_SPACE_KEY; break;
+                case SDLK_F1:
+                    KeyboardState.BtnStateUP = BTN_UP_F1_KEY;break;
+                case SDLK_F2:
+                    KeyboardState.BtnStateUP = BTN_UP_F2_KEY;break;
+
                 default:
                     break;
                     KeyboardState.BtnStateUP = BTN_UP_NO;

@@ -17,14 +17,16 @@ namespace ENGINE {
         virtual ~BaseObject2D();
 
         bool Init(int resx,int resy);
-        void setImage(std::string path);
+
         void useShader(int type);
         void setShaderPtr(Shader * pt);
+        void setImage(std::string path);
 
         void SetDragable();
         void ResetDragable();
         bool IsDragAble();
 
+        std::string getImagePath();
         Shader * getShaderPtr();
 
 

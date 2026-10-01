@@ -48,6 +48,8 @@ typedef enum{
     BTN_UP_RIGHT_KEY,
     BTN_UP_UP_KEY,
     BTN_UP_DOWN_KEY,
+    BTN_UP_F1_KEY,      // Coin 1€
+    BTN_UP_F2_KEY,      // Coin 2€
     BTN_UP_SPACE_KEY,
     BTN_UP_ESC
 }BTN_UP;
@@ -72,10 +74,17 @@ public:
     string FPSasString(uint64_t el,string text);
     double FPS(uint64_t el);
 
+    void StartTimer(uint64_t timetoshot,FP callback);
+
 protected:
     std::chrono::duration<double>  _Elapsed;
     Clock::time_point _Start;
     Clock::time_point _End;
+
+    FP TimerCallback = nullptr;
+
+    Clock::time_point _TimerStart;
+
 
     double fps = 0;
 };
