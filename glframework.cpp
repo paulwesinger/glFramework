@@ -394,6 +394,80 @@ void GLFrameWork::HandleMessage(){
                 case SDLK_F2:
                     KeyboardState.BtnStateUP = BTN_UP_F2_KEY;break;
 
+                case SDLK_a:
+                    KeyboardState.BtnStateUP = BTN_UP_A; break;
+                case SDLK_b:
+                    KeyboardState.BtnStateUP = BTN_UP_B; break;
+                case SDLK_c:
+                    KeyboardState.BtnStateUP = BTN_UP_C; break;
+                case SDLK_d:
+                    KeyboardState.BtnStateUP = BTN_UP_D; break;
+                case SDLK_e:
+                    KeyboardState.BtnStateUP = BTN_UP_E; break;
+                case SDLK_f:
+                    KeyboardState.BtnStateUP = BTN_UP_F; break;
+                case SDLK_g:
+                    KeyboardState.BtnStateUP = BTN_UP_G; break;
+                case SDLK_h:
+                    KeyboardState.BtnStateUP = BTN_UP_H; break;
+                case SDLK_i:
+                    KeyboardState.BtnStateUP = BTN_UP_I; break;
+                case SDLK_j:
+                    KeyboardState.BtnStateUP = BTN_UP_J; break;
+                case SDLK_k:
+                    KeyboardState.BtnStateUP = BTN_UP_K; break;
+                case SDLK_l:
+                    KeyboardState.BtnStateUP = BTN_UP_L; break;
+                case SDLK_m:
+                    KeyboardState.BtnStateUP = BTN_UP_M; break;
+                case SDLK_n:
+                    KeyboardState.BtnStateUP = BTN_UP_N; break;
+                case SDLK_o:
+                    KeyboardState.BtnStateUP = BTN_UP_O; break;
+                case SDLK_p:
+                    KeyboardState.BtnStateUP = BTN_UP_P; break;
+                case SDLK_q:
+                    KeyboardState.BtnStateUP = BTN_UP_Q; break;
+                case SDLK_r:
+                    KeyboardState.BtnStateUP = BTN_UP_R; break;
+                case SDLK_s:
+                    KeyboardState.BtnStateUP = BTN_UP_S; break;
+                case SDLK_t:
+                    KeyboardState.BtnStateUP = BTN_UP_T; break;
+                case SDLK_u:
+                    KeyboardState.BtnStateUP = BTN_UP_U; break;
+                case SDLK_v:
+                    KeyboardState.BtnStateUP = BTN_UP_V; break;
+                case SDLK_w:
+                    KeyboardState.BtnStateUP = BTN_UP_W; break;
+                case SDLK_x:
+                    KeyboardState.BtnStateUP = BTN_UP_X; break;
+                case SDLK_y:
+                    KeyboardState.BtnStateUP = BTN_UP_Y; break;
+                case SDLK_z:
+                    KeyboardState.BtnStateUP = BTN_UP_Z; break;
+
+                case SDLK_0:
+                    KeyboardState.BtnStateUP = BTN_UP_0; break;
+                case SDLK_1:
+                    KeyboardState.BtnStateUP = BTN_UP_1; break;
+                case SDLK_2:
+                    KeyboardState.BtnStateUP = BTN_UP_2; break;
+                case SDLK_3:
+                    KeyboardState.BtnStateUP = BTN_UP_3; break;
+                case SDLK_4:
+                    KeyboardState.BtnStateUP = BTN_UP_4; break;
+                case SDLK_5:
+                    KeyboardState.BtnStateUP = BTN_UP_5; break;
+                case SDLK_6:
+                    KeyboardState.BtnStateUP = BTN_UP_6; break;
+                case SDLK_7:
+                    KeyboardState.BtnStateUP = BTN_UP_7; break;
+                case SDLK_8:
+                    KeyboardState.BtnStateUP = BTN_UP_8; break;
+                case SDLK_9:
+                    KeyboardState.BtnStateUP = BTN_UP_9; break;
+
                 default:
                     break;
                     KeyboardState.BtnStateUP = BTN_UP_NO;

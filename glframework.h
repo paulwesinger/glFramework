@@ -51,7 +51,46 @@ typedef enum{
     BTN_UP_F1_KEY,      // Coin 1€
     BTN_UP_F2_KEY,      // Coin 2€
     BTN_UP_SPACE_KEY,
-    BTN_UP_ESC
+    BTN_UP_ESC,
+
+    BTN_UP_A,
+    BTN_UP_B,
+    BTN_UP_C,
+    BTN_UP_D,
+    BTN_UP_E,
+    BTN_UP_F,
+    BTN_UP_G,
+    BTN_UP_H,
+    BTN_UP_I,
+    BTN_UP_J,
+    BTN_UP_K,
+    BTN_UP_L,
+    BTN_UP_M,
+    BTN_UP_N,
+    BTN_UP_O,
+    BTN_UP_P,
+    BTN_UP_Q,
+    BTN_UP_R,
+    BTN_UP_S,
+    BTN_UP_T,
+    BTN_UP_U,
+    BTN_UP_V,
+    BTN_UP_W,
+    BTN_UP_X,
+    BTN_UP_Y,
+    BTN_UP_Z,
+    // Ziffern
+    BTN_UP_0,
+    BTN_UP_1,
+    BTN_UP_2,
+    BTN_UP_3,
+    BTN_UP_4,
+    BTN_UP_5,
+    BTN_UP_6,
+    BTN_UP_7,
+    BTN_UP_8,
+    BTN_UP_9
+
 }BTN_UP;
 
 union KEYBOARDSTATE{
