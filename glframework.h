@@ -52,6 +52,7 @@ typedef enum{
     BTN_UP_F2_KEY,      // Coin 2€
     BTN_UP_SPACE_KEY,
     BTN_UP_ESC,
+    BTN_UP_ENTER,
 
     BTN_UP_A,
     BTN_UP_B,

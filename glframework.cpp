@@ -377,8 +377,10 @@ void GLFrameWork::HandleMessage(){
             case SDL_KEYUP:
             switch(_Event.key.keysym.sym) {
                 case SDLK_ESCAPE:
-                _Quit =true; break;
+                    _Quit =true;
                     KeyboardState.BtnStateUP = BTN_UP_ESC;  break;
+                case SDLK_KP_ENTER:
+                    KeyboardState.BtnStateUP = BTN_UP_ENTER; break;
                 case SDLK_LEFT:
                     KeyboardState.BtnStateUP = BTN_UP_LEFT_KEY; break;
                 case SDLK_RIGHT:
