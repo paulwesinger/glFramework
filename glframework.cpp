@@ -118,7 +118,9 @@ GLFrameWork::GLFrameWork(int resx,int resy) {
 
 }
 
-
+Shader* GLFrameWork::GetShader(){
+    return _Shader;
+}
 bool GLFrameWork::initViewElements(){
 
     Logtext += "Init Shader";

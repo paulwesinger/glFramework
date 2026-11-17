@@ -175,6 +175,8 @@ public:
     bool initViewElements();
     virtual bool AddTextDisplay(int x,int y,int id, string name);
     virtual bool AddTextDisplayWithBackground(int x, int y,int id,string name);
+
+    Shader * GetShader();
 protected:
     void sdl_die(string msg);
 
